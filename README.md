@@ -1,2 +1,2 @@
 # isa-OnlyBuns
-OnlyBuns application with spring + angular
+OnlyBuns application backend
