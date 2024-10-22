@@ -14,7 +14,7 @@ public class Post {
 
     @Column(nullable = false)
     private String description;
-
+    private String title;
     private String imageUrl;
 
     private int likes;
@@ -31,8 +31,9 @@ public class Post {
         this.deleted = false;
     }
 
-    public Post(String description, String imageUrl) {
+    public Post(String title,String description, String imageUrl) {
         this.description = description;
+        this.title=title;
         this.imageUrl = imageUrl;
         this.likes = 0;
         this.deleted = false;
@@ -52,6 +53,13 @@ public class Post {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getImageUrl() {

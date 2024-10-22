@@ -31,7 +31,7 @@ public class PostService {
     }
 
     public Post createPost(PostDTO postDTO) {
-        Post post = new Post(postDTO.getDescription(), postDTO.getImageUrl());
+        Post post = new Post(postDTO.getTitle(),postDTO.getDescription(), postDTO.getImageUrl());
         return postRepository.save(post);
     }
 

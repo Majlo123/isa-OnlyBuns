@@ -5,6 +5,7 @@ import java.util.List;
 public class PostDTO {
     private Long id;
     private String description;
+    private String title;
     private String imageUrl;
     private int likes;
     private List<CommentDTO> comments;
@@ -24,6 +25,13 @@ public class PostDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getImageUrl() {
