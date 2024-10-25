@@ -1,8 +1,8 @@
 package rs.ac.uns.ftn.informatika.rest.dto;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 
 public class UserAccountDTO {
     //private Long id;

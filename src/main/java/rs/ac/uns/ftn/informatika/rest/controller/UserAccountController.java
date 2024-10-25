@@ -6,27 +6,34 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.uns.ftn.informatika.rest.domain.AuthRequest;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
+import rs.ac.uns.ftn.informatika.rest.service.JwtService;
 import rs.ac.uns.ftn.informatika.rest.service.UserAccountService;
 
 import javax.print.attribute.standard.Media;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import java.awt.*;
 import java.util.Collection;
-
 @RestController
 @RequestMapping("/api/userAccount")
 public class UserAccountController {
 
     @Autowired
     private UserAccountService userAccountService;
+
+
+
+
 
     @Operation(description = "Get all users", method = "GET")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -42,7 +49,7 @@ public class UserAccountController {
             @ApiResponse(responseCode = "409", description = "Not possible to create new greeting when given id is not null or empty",
                     content = @Content)
     })
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/register")
     public ResponseEntity<UserAccount> createUser(@Valid @RequestBody UserAccountDTO userAccountDto) throws ConstraintViolationException {
         UserAccount newAccount = null;
         try{
@@ -52,9 +59,13 @@ public class UserAccountController {
             return  new ResponseEntity<UserAccount>(HttpStatus.CONFLICT);
         }
     }
+    @PostMapping(path = "/login")
+    public String login(@RequestBody AuthRequest credentials) {
+        return userAccountService.verify(credentials);
+    }
     @Operation(description = "Delete user", method = "DELETE")
     @ApiResponses(value = { @ApiResponse(responseCode = "404", description = "Greeting not found", content = @Content),
-            @ApiResponse(responseCode = "204", description = "Greeting successfully deleted", content = @Content) } )
+            @ApiResponse(responseCode = "204", description = "User Account successfully deleted", content = @Content) } )
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<UserAccount> deleteUser(@Parameter(description = "user id", required = true) @PathVariable("id") Long id) {
         UserAccount userAccount = userAccountService.delete(id);
