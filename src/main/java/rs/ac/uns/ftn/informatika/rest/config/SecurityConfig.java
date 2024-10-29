@@ -41,7 +41,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(request -> request
                 .requestMatchers("/api/userAccount/register","/api/userAccount/login","/swagger-ui/**",
                         "/v3/api-docs/**",
-
+                          "/api/userAccount/verify",
                         "/swagger-ui.html").permitAll().anyRequest().authenticated());
         http.httpBasic(Customizer.withDefaults());
         http.sessionManagement(sess -> sess

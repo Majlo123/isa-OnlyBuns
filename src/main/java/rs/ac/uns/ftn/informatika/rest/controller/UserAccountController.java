@@ -7,12 +7,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.uns.ftn.informatika.rest.config.Utility;
 import rs.ac.uns.ftn.informatika.rest.domain.AuthRequest;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
@@ -50,10 +53,12 @@ public class UserAccountController {
                     content = @Content)
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/register")
-    public ResponseEntity<UserAccount> createUser(@Valid @RequestBody UserAccountDTO userAccountDto) throws ConstraintViolationException {
+    public ResponseEntity<UserAccount> createUser(@Valid @RequestBody UserAccountDTO userAccountDto, HttpServletRequest request) throws ConstraintViolationException {
         UserAccount newAccount = null;
         try{
-            newAccount = userAccountService.create(userAccountDto);
+            newAccount = userAccountService.create(userAccountDto, request);
+
+
             return  new ResponseEntity<UserAccount>(newAccount, HttpStatus.CREATED);
         } catch (Exception e){
             return  new ResponseEntity<UserAccount>(HttpStatus.CONFLICT);
@@ -73,5 +78,14 @@ public class UserAccountController {
             return new ResponseEntity<UserAccount>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<UserAccount>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/verify")
+    public String verifyUser(@Param("code") String code) {
+        if (userAccountService.verifyVerificationCode(code)) {
+            return "verify_success";
+        } else {
+            return "verify_fail";
+        }
     }
 }

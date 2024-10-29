@@ -29,6 +29,27 @@ public class UserAccount {
     private String address;
     @Column(name = "followers_count")
     private int followersCount;
+    @Column(name = "verification_code")
+    private String verificationCode;
+    @Column(name = "is_enabled")
+    private boolean isEnabled;
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
+
     private String role;
 
     public UserAccount() {

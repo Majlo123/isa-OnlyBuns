@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicLong;
 public interface InMemoryUserAccountRepository extends JpaRepository<UserAccount, Long> {
 
    UserAccount findByEmail(String email);
+
+   UserAccount findByVerificationCode(String verificationCode);
     /*private static AtomicLong counter = new AtomicLong();
     private final ConcurrentMap<Long, UserAccount> userAccounts = new ConcurrentHashMap<>();
 
