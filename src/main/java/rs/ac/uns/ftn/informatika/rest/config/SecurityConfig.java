@@ -34,10 +34,10 @@ public class SecurityConfig {
         http.authorizeHttpRequests(request -> request
                 .requestMatchers("/api/userAccount/register", "/api/userAccount/login", "/swagger-ui/**",
                         "/v3/api-docs/**", "/swagger-ui.html")
-                .permitAll() // Dozvoljava pristup ovim rutama bez autentifikacije
-                .requestMatchers(HttpMethod.GET, "/**")
-                .permitAll() // Dozvoljava sve GET zahteve bez autentifikacije
-                .anyRequest().authenticated()); // Ostali zahtevi zahtevaju autentifikaciju
+                .permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/posts")
+                .permitAll()
+                .anyRequest().authenticated());
 
         http.httpBasic(Customizer.withDefaults());
         http.sessionManagement(sess -> sess
