@@ -1,6 +1,6 @@
 package rs.ac.uns.ftn.informatika.rest.domain;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "comments")
