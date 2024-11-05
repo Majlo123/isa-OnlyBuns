@@ -1,13 +1,7 @@
 package rs.ac.uns.ftn.informatika.rest.domain;
 
-
 import jakarta.persistence.*;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
-
-/*import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;*/
 
 @Entity
 @Table(name = "UserAccounts")
@@ -17,35 +11,49 @@ public class UserAccount {
     @Column(name = "acc_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "first_name")
     private String firstName;
+
     @Column(name = "last_name")
     private String lastName;
+
     @Column(name = "email")
     private String email;
+
     @Column(name = "password")
     private String password;
+
     @Column(name = "address")
     private String address;
+
     @Column(name = "followers_count")
     private int followersCount;
+
+    @Column(name = "post_count")
+    private int postCount;
+
+    @Column(name = "following_count")
+    private int followingCount;
+
     private String role;
 
     public UserAccount() {
-
     }
+
     public UserAccount(UserAccountDTO userAccountDTO){
         this.address = userAccountDTO.getAddress();
         this.firstName = userAccountDTO.getFirstName();
         this.lastName = userAccountDTO.getLastName();
-
         this.email = userAccountDTO.getEmail();
         this.password = userAccountDTO.getPassword();
         this.followersCount = userAccountDTO.getFollowersCount();
-
+        this.postCount = userAccountDTO.getPostCount();
+        this.followingCount = userAccountDTO.getFollowingCount();
     }
 
-    public UserAccount(Long id, String firstName, String lastName, String email, String password, String address, int followersCount) {
+    public UserAccount(Long id, String firstName, String lastName, String email, String password, String address,
+                       int followersCount, int postCount, int followingCount) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -53,7 +61,11 @@ public class UserAccount {
         this.password = password;
         this.address = address;
         this.followersCount = followersCount;
+        this.postCount = postCount;
+        this.followingCount = followingCount;
     }
+
+    // Getteri i setteri za sva polja
 
     public Long getId() {
         return id;
@@ -109,6 +121,22 @@ public class UserAccount {
 
     public void setFollowersCount(int followersCount) {
         this.followersCount = followersCount;
+    }
+
+    public int getPostCount() {
+        return postCount;
+    }
+
+    public void setPostCount(int postCount) {
+        this.postCount = postCount;
+    }
+
+    public int getFollowingCount() {
+        return followingCount;
+    }
+
+    public void setFollowingCount(int followingCount) {
+        this.followingCount = followingCount;
     }
 
     public String getRole() {

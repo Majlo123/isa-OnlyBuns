@@ -1,10 +1,12 @@
 package rs.ac.uns.ftn.informatika.rest.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -13,6 +15,19 @@ import java.util.concurrent.atomic.AtomicLong;
 public interface InMemoryUserAccountRepository extends JpaRepository<UserAccount, Long> {
 
    UserAccount findByEmail(String email);
+   List<UserAccount> findByFirstNameContaining(String firstName);
+
+   List<UserAccount> findByLastNameContaining(String lastName);
+
+   List<UserAccount> findByEmailContaining(String email);
+
+   List<UserAccount> findByPostCountBetween(int minPosts, int maxPosts);
+
+   @Query("SELECT u FROM UserAccount u ORDER BY u.followingCount ASC")
+   List<UserAccount> findAllSortedByFollowingCount();
+
+   @Query("SELECT u FROM UserAccount u ORDER BY u.email ASC")
+   List<UserAccount> findAllSortedByEmail();
     /*private static AtomicLong counter = new AtomicLong();
     private final ConcurrentMap<Long, UserAccount> userAccounts = new ConcurrentHashMap<>();
 
