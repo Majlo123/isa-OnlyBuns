@@ -1,5 +1,7 @@
 package rs.ac.uns.ftn.informatika.rest.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import rs.ac.uns.ftn.informatika.rest.domain.AuthRequest;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
@@ -10,7 +12,7 @@ import java.util.List;
 public interface UserAccountService {
 
     UserAccount create(UserAccountDTO userAccountDto) throws Exception;
-    Collection<UserAccount> findAll();
+    Page<UserAccount> findAll(Pageable pageable);
     UserAccount findById(Long id);
     UserAccount update(UserAccountDTO userAccountDto, Long id) throws Exception;
     UserAccount delete(Long id);

@@ -6,32 +6,38 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import rs.ac.uns.ftn.informatika.rest.domain.AuthRequest;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
 import rs.ac.uns.ftn.informatika.rest.service.UserAccountService;
 
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Valid;
-import java.util.Collection;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/userAccount")
+@RequestMapping("/api/userAccount") // Tačna ruta
 public class UserAccountController {
-
     @Autowired
     private UserAccountService userAccountService;
-
-    @Operation(description = "Get all users", method = "GET")
+    @Operation(description = "Get all users with pagination", method = "GET")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<UserAccount>> getAllUsers() {
-        Collection<UserAccount> userAccounts = userAccountService.findAll();
+    public ResponseEntity<Page<UserAccount>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Page<UserAccount> userAccounts = userAccountService.findAll(PageRequest.of(page, size));
         return new ResponseEntity<>(userAccounts, HttpStatus.OK);
     }
 

@@ -28,19 +28,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(customizer -> customizer.disable());
+        http.csrf(csrf -> csrf.disable());
 
         // Definišemo pravila za autorizaciju
         http.authorizeHttpRequests(request -> request
                 .requestMatchers("/api/userAccount/register", "/api/userAccount/login", "/swagger-ui/**",
                         "/v3/api-docs/**", "/swagger-ui.html")
                 .permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/posts")
+                .requestMatchers("/api/posts/**") // Dozvoljavamo sve metode za /api/posts/**
+                .permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/userAccount/**") // Dozvoljavamo sve GET zahteve na /api/userAccount/**
                 .permitAll()
                 .anyRequest().authenticated());
 
+        // Konfigurisanje sesije i autentifikacije
         http.httpBasic(Customizer.withDefaults());
-        http.sessionManagement(sess -> sess
+        http.sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
