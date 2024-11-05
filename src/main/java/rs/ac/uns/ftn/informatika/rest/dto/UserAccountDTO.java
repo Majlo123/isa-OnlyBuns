@@ -5,30 +5,35 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 
 public class UserAccountDTO {
-    //private Long id;
+
     @NotEmpty
     private String firstName;
+
     @NotEmpty
     private String lastName;
+
     @Email(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
     private String email;
+
     @NotEmpty
     private String password;
+
     @NotEmpty
     private String address;
+
     @Min(value = 0)
     private int followersCount;
-    public UserAccountDTO(){
 
+    @Min(value = 0)
+    private int postCount;
+
+    @Min(value = 0)
+    private int followingCount;
+
+    public UserAccountDTO() {
     }
 
-//    public Long getId() {
-//        return id;
-//    }
-//
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
+    // Getteri i setteri za sva polja
 
     public String getFirstName() {
         return firstName;
@@ -76,5 +81,21 @@ public class UserAccountDTO {
 
     public void setFollowersCount(int followersCount) {
         this.followersCount = followersCount;
+    }
+
+    public int getPostCount() {
+        return postCount;
+    }
+
+    public void setPostCount(int postCount) {
+        this.postCount = postCount;
+    }
+
+    public int getFollowingCount() {
+        return followingCount;
+    }
+
+    public void setFollowingCount(int followingCount) {
+        this.followingCount = followingCount;
     }
 }
