@@ -12,9 +12,10 @@
 	<groupId>rs.ac.uns.ftn.informatika</groupId>
 	<artifactId>OnlyBans</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	
+
+
 	<packaging>war</packaging>
-	
+
 	<name>OnlyBans</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -110,6 +111,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 

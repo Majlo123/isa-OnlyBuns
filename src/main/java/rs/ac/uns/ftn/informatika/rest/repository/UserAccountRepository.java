@@ -4,6 +4,7 @@ import org.apache.catalina.User;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface UserAccountRepository {
 
@@ -12,4 +13,5 @@ public interface UserAccountRepository {
     UserAccount update(UserAccount userAccount);
     UserAccount delete(Long id);
     Collection<UserAccount> findAll();
+
 }

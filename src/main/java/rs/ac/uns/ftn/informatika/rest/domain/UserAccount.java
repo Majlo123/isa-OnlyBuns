@@ -1,13 +1,7 @@
 package rs.ac.uns.ftn.informatika.rest.domain;
 
-
 import jakarta.persistence.*;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
-
-/*import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;*/
 
 @Entity
 @Table(name = "UserAccounts")
@@ -17,18 +11,31 @@ public class UserAccount {
     @Column(name = "acc_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "first_name")
     private String firstName;
+
     @Column(name = "last_name")
     private String lastName;
+
+
     @Column(name = "email", unique = true)
     private String email;
+
     @Column(name = "password")
     private String password;
+
     @Column(name = "address")
     private String address;
+
     @Column(name = "followers_count")
     private int followersCount;
+
+    @Column(name = "post_count")
+    private int postCount;
+
+
+
     @Column(name = "verification_code")
     private String verificationCode;
     @Column(name = "is_enabled")
@@ -53,16 +60,16 @@ public class UserAccount {
     private String role;
 
     public UserAccount() {
-
     }
+
     public UserAccount(UserAccountDTO userAccountDTO){
         this.address = userAccountDTO.getAddress();
         this.firstName = userAccountDTO.getFirstName();
         this.lastName = userAccountDTO.getLastName();
-
         this.email = userAccountDTO.getEmail();
         this.password = userAccountDTO.getPassword();
         this.followersCount = userAccountDTO.getFollowersCount();
+        this.postCount = userAccountDTO.getPostCount();
 
     }
 
@@ -74,7 +81,10 @@ public class UserAccount {
         this.password = password;
         this.address = address;
         this.followersCount = followersCount;
-    }
+        this.postCount = postCount;
+        }
+
+    // Getteri i setteri za sva polja
 
     public Long getId() {
         return id;
@@ -131,6 +141,16 @@ public class UserAccount {
     public void setFollowersCount(int followersCount) {
         this.followersCount = followersCount;
     }
+
+    public int getPostCount() {
+        return postCount;
+    }
+
+    public void setPostCount(int postCount) {
+        this.postCount = postCount;
+    }
+
+
 
     public String getRole() {
         return role;

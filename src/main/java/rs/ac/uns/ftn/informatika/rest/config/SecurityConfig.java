@@ -41,11 +41,11 @@ public class SecurityConfig {
         http.authorizeHttpRequests(request -> request
                 .requestMatchers("/api/userAccount/register","/api/userAccount/login","/swagger-ui/**",
                         "/v3/api-docs/**",
-                          "/api/userAccount/verify",
+                        "/api/userAccount/verify",
                         "/swagger-ui.html").permitAll().anyRequest().authenticated());
         http.httpBasic(Customizer.withDefaults());
         http.sessionManagement(sess -> sess
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -60,7 +60,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-           return config.getAuthenticationManager();
+        return config.getAuthenticationManager();
     }
 
 
