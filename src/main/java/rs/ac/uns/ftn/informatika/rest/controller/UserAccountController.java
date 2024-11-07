@@ -65,8 +65,13 @@ public class UserAccountController {
         }
     }
     @PostMapping(path = "/login")
-    public String login(@RequestBody AuthRequest credentials) {
-        return userAccountService.verify(credentials);
+    public ResponseEntity<String> login(@RequestBody AuthRequest credentials) {
+        String token = userAccountService.verify(credentials);
+        if(token.equals("Failure")){
+            return new ResponseEntity<String>("Email not verified",HttpStatus.UNAUTHORIZED);
+        }else{
+            return new ResponseEntity<String>(token, HttpStatus.OK);
+        }
     }
     @Operation(description = "Delete user", method = "DELETE")
     @ApiResponses(value = { @ApiResponse(responseCode = "404", description = "Greeting not found", content = @Content),

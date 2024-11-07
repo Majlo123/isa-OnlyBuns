@@ -131,7 +131,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     public String verify(AuthRequest credentials){
         Authentication authentication =
                 authManager.authenticate(new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword()));
-        if(authentication.isAuthenticated()){
+        if(authentication.isAuthenticated() && userAccountRepository.findByEmail(credentials.getUsername()).isEnabled()){
             return jwtService.generateToken(credentials.getUsername());
         }else {
             return "Failure";
