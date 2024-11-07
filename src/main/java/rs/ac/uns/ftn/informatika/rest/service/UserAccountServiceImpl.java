@@ -58,15 +58,21 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     @Override
     public UserAccount create(UserAccountDTO accountDTO, HttpServletRequest request) throws Exception {
-        accountDTO.setPassword(encoder.encode(accountDTO.getPassword()));
 
-        UserAccount savedAcc = new UserAccount(accountDTO);
-        savedAcc.setEnabled(false);
-        String randomCode = RandomStringUtils.randomAlphanumeric(64);
-        savedAcc.setVerificationCode(randomCode);
-        userAccountRepository.save(savedAcc);
-        sendVerificationEmail(savedAcc, request);
-        return savedAcc;
+            if (userAccountRepository.findByEmail(accountDTO.getEmail()) != null) {
+                throw new Exception("Email already exists");
+            } else {
+                accountDTO.setPassword(encoder.encode(accountDTO.getPassword()));
+
+                UserAccount savedAcc = new UserAccount(accountDTO);
+                savedAcc.setEnabled(false);
+                String randomCode = RandomStringUtils.randomAlphanumeric(64);
+                savedAcc.setVerificationCode(randomCode);
+                userAccountRepository.save(savedAcc);
+                sendVerificationEmail(savedAcc, request);
+                return savedAcc;
+            }
+
     }
     @Override
     public void sendVerificationEmail(UserAccount savedAcc, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
