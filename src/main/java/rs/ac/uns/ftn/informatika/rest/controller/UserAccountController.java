@@ -6,12 +6,17 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.uns.ftn.informatika.rest.config.Utility;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,23 +49,31 @@ public class UserAccountController {
     @Operation(description = "Create new user", method = "POST")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Created",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UserAccount.class))}),
-            @ApiResponse(responseCode = "409", description = "Conflict",
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UserAccount.class))}),
+            @ApiResponse(responseCode = "409", description = "Not possible to create new greeting when given id is not null or empty",
                     content = @Content)
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/register")
-    public ResponseEntity<UserAccount> createUser(@Valid @RequestBody UserAccountDTO userAccountDto) {
-        try {
-            UserAccount newAccount = userAccountService.create(userAccountDto);
-            return new ResponseEntity<>(newAccount, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+    public ResponseEntity<UserAccount> createUser(@Valid @RequestBody UserAccountDTO userAccountDto, HttpServletRequest request) throws ConstraintViolationException {
+        UserAccount newAccount = null;
+        try{
+            newAccount = userAccountService.create(userAccountDto, request);
+
+
+            return  new ResponseEntity<UserAccount>(newAccount, HttpStatus.CREATED);
+        } catch (Exception e){
+            return  new ResponseEntity<UserAccount>(HttpStatus.CONFLICT);
         }
     }
 
     @PostMapping(path = "/login")
-    public String login(@RequestBody AuthRequest credentials) {
-        return userAccountService.verify(credentials);
+    public ResponseEntity<String> login(@RequestBody AuthRequest credentials) {
+        String token = userAccountService.verify(credentials);
+        if(token.equals("Failure")){
+            return new ResponseEntity<String>("Email not verified",HttpStatus.UNAUTHORIZED);
+        }else{
+            return new ResponseEntity<String>(token, HttpStatus.OK);
+        }
     }
 
     @Operation(description = "Delete user", method = "DELETE")
@@ -74,7 +87,16 @@ public class UserAccountController {
         if (userAccount == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<UserAccount>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/verify")
+    public String verifyUser(@Param("code") String code) {
+        if (userAccountService.verifyVerificationCode(code)) {
+            return "verify_success";
+        } else {
+            return "verify_fail";
+        }
     }
 
     // New search and sort endpoints

@@ -23,11 +23,13 @@ public interface InMemoryUserAccountRepository extends JpaRepository<UserAccount
 
    List<UserAccount> findByPostCountBetween(int minPosts, int maxPosts);
 
-   @Query("SELECT u FROM UserAccount u ORDER BY u.followingCount ASC")
+   @Query("SELECT u FROM UserAccount u ORDER BY u.followersCount ASC")
    List<UserAccount> findAllSortedByFollowingCount();
 
    @Query("SELECT u FROM UserAccount u ORDER BY u.email ASC")
    List<UserAccount> findAllSortedByEmail();
+
+   UserAccount findByVerificationCode(String verificationCode);
     /*private static AtomicLong counter = new AtomicLong();
     private final ConcurrentMap<Long, UserAccount> userAccounts = new ConcurrentHashMap<>();
 

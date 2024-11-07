@@ -9,11 +9,13 @@
         <outputRelativeToContentRoot value="true" />
         <module name="rest-example" />
         <module name="isa" />
+        <module name="OnlyBans" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="OnlyBans" options="-parameters" />
       <module name="isa" options="-parameters" />
       <module name="rest-example" options="-parameters" />
     </option>

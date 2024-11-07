@@ -27,8 +27,7 @@ public class UserAccountDTO {
     @Min(value = 0)
     private int postCount;
 
-    @Min(value = 0)
-    private int followingCount;
+
 
     public UserAccountDTO() {
     }
@@ -91,11 +90,5 @@ public class UserAccountDTO {
         this.postCount = postCount;
     }
 
-    public int getFollowingCount() {
-        return followingCount;
-    }
 
-    public void setFollowingCount(int followingCount) {
-        this.followingCount = followingCount;
-    }
 }

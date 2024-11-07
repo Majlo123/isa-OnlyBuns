@@ -18,7 +18,8 @@ public class UserAccount {
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "email")
+
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "password")
@@ -33,8 +34,28 @@ public class UserAccount {
     @Column(name = "post_count")
     private int postCount;
 
-    @Column(name = "following_count")
-    private int followingCount;
+
+
+    @Column(name = "verification_code")
+    private String verificationCode;
+    @Column(name = "is_enabled")
+    private boolean isEnabled;
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
 
     private String role;
 
@@ -49,11 +70,10 @@ public class UserAccount {
         this.password = userAccountDTO.getPassword();
         this.followersCount = userAccountDTO.getFollowersCount();
         this.postCount = userAccountDTO.getPostCount();
-        this.followingCount = userAccountDTO.getFollowingCount();
+
     }
 
-    public UserAccount(Long id, String firstName, String lastName, String email, String password, String address,
-                       int followersCount, int postCount, int followingCount) {
+    public UserAccount(Long id, String firstName, String lastName, String email, String password, String address, int followersCount) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -62,8 +82,7 @@ public class UserAccount {
         this.address = address;
         this.followersCount = followersCount;
         this.postCount = postCount;
-        this.followingCount = followingCount;
-    }
+        }
 
     // Getteri i setteri za sva polja
 
@@ -131,13 +150,7 @@ public class UserAccount {
         this.postCount = postCount;
     }
 
-    public int getFollowingCount() {
-        return followingCount;
-    }
 
-    public void setFollowingCount(int followingCount) {
-        this.followingCount = followingCount;
-    }
 
     public String getRole() {
         return role;
