@@ -115,7 +115,7 @@ public class UserAccountServiceImpl implements UserAccountService {
         return deletedAcc;
     }
 
-    @Override
+    /*@Override
     public UserAccount update(UserAccountDTO userAccountDto, Long id) throws Exception {
         return userAccountRepository.findById(id)
                 .map(existingUserAccount -> {
@@ -128,7 +128,7 @@ public class UserAccountServiceImpl implements UserAccountService {
                     return userAccountRepository.save(existingUserAccount);
                 })
                 .orElseThrow(() -> new Exception("UserAccount not found with id: " + id));
-    }
+    }*/
 
 
     public List<UserAccount> searchByFirstName(String firstName) {

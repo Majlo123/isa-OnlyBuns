@@ -17,7 +17,7 @@ public interface UserAccountService {
 
     Page<UserAccount> findAll(Pageable pageable);
     UserAccount findById(Long id);
-    UserAccount update(UserAccountDTO userAccountDto, Long id) throws Exception;
+    //UserAccount update(UserAccountDTO userAccountDto, Long id) throws Exception;
     UserAccount delete(Long id);
     String verify(AuthRequest authRequest);
     void sendVerificationEmail(UserAccount savedAcc, HttpServletRequest request) throws Exception;
