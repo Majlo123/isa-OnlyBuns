@@ -68,7 +68,11 @@ public class UserAccountController {
 
     @PostMapping(path = "/login")
     public ResponseEntity<String> login(@RequestBody AuthRequest credentials) {
+        System.out.println(credentials);
+
         String token = userAccountService.verify(credentials);
+        System.out.println(token);
+
         if(token.equals("Failure")){
             return new ResponseEntity<String>("Email not verified",HttpStatus.UNAUTHORIZED);
         }else{
