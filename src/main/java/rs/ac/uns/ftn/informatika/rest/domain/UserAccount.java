@@ -1,5 +1,7 @@
 package rs.ac.uns.ftn.informatika.rest.domain;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
 
@@ -18,6 +20,8 @@ public class UserAccount {
     @Column(name = "last_name")
     private String lastName;
 
+    @Column(name = "user_name")
+    private String username;
 
     @Column(name = "email", unique = true)
     private String email;
@@ -25,7 +29,7 @@ public class UserAccount {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "address")
+    @Column(name = "address", columnDefinition = "TEXT")
     private String address;
 
     @Column(name = "followers_count")
@@ -63,7 +67,7 @@ public class UserAccount {
     }
 
     public UserAccount(UserAccountDTO userAccountDTO){
-        this.address = userAccountDTO.getAddress();
+        this.address = convertAddressToJson(userAccountDTO.getAddress());
         this.firstName = userAccountDTO.getFirstName();
         this.lastName = userAccountDTO.getLastName();
         this.email = userAccountDTO.getEmail();
@@ -83,7 +87,15 @@ public class UserAccount {
         this.followersCount = followersCount;
         this.postCount = postCount;
         }
-
+    private String convertAddressToJson(Address address) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(address);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     // Getteri i setteri za sva polja
 
     public Long getId() {

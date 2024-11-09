@@ -56,6 +56,7 @@ public class UserAccountController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, path = "/register")
     public ResponseEntity<UserAccount> createUser(@Valid @RequestBody UserAccountDTO userAccountDto, HttpServletRequest request) throws ConstraintViolationException {
         UserAccount newAccount = null;
+        System.out.println("Address" + userAccountDto.getAddress());
         try{
             newAccount = userAccountService.create(userAccountDto, request);
 

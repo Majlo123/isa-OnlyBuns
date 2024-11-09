@@ -3,6 +3,7 @@ package rs.ac.uns.ftn.informatika.rest.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
+import rs.ac.uns.ftn.informatika.rest.domain.Address;
 
 public class UserAccountDTO {
 
@@ -18,8 +19,16 @@ public class UserAccountDTO {
     @NotEmpty
     private String password;
 
-    @NotEmpty
-    private String address;
+
+    private Address address;
+
+    public  Address getAddress() {
+        return address;
+    }
+
+    public void setAddress( Address address) {
+        this.address = address;
+    }
 
     @Min(value = 0)
     private int followersCount;
@@ -66,13 +75,7 @@ public class UserAccountDTO {
         this.password = password;
     }
 
-    public String getAddress() {
-        return address;
-    }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
 
     public int getFollowersCount() {
         return followersCount;
