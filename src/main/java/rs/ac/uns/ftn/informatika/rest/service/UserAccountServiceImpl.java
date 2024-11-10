@@ -58,7 +58,14 @@ public class UserAccountServiceImpl implements UserAccountService {
     public UserAccount findById(Long id) {
         return userAccountRepository.findById(id).orElse(null);
     }
-
+    @Override
+    public String getUsernameById(Long userId) {
+        UserAccount user = userAccountRepository.findById(userId).orElse(null);
+        if (user != null) {
+            return user.getFirstName() + " " + user.getLastName(); // Ili prilagodite prikaz korisničkog imena
+        }
+        return null;
+    }
     @Override
     public UserAccount create(UserAccountDTO accountDTO, HttpServletRequest request) throws Exception {
 

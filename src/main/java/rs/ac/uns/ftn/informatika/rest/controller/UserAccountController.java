@@ -111,7 +111,14 @@ public class UserAccountController {
         List<UserAccount> users = userAccountService.searchByFirstName(firstName);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
-
+    @GetMapping("/{userId}/username")
+    public ResponseEntity<String> getUsernameById(@PathVariable("userId") Long userId) {
+        String username = userAccountService.getUsernameById(userId);
+        if (username == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(username, HttpStatus.OK);
+    }
     @Operation(description = "Search users by last name", method = "GET")
     @GetMapping(value = "/search/lastName", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<UserAccount>> searchByLastName(@RequestParam("lastName") String lastName) {

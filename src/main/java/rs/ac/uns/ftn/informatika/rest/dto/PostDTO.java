@@ -9,8 +9,10 @@ public class PostDTO {
     private String imageUrl;
     private int likes;
     private List<CommentDTO> comments;
+    private Long userId;  // Novo polje za ID korisnika koji je kreirao post
 
-    // Getteri i setteri
+    // Getteri i setteri za sva polja, uključujući za userId
+
     public Long getId() {
         return id;
     }
@@ -26,6 +28,7 @@ public class PostDTO {
     public void setDescription(String description) {
         this.description = description;
     }
+
     public String getTitle() {
         return title;
     }
@@ -56,5 +59,13 @@ public class PostDTO {
 
     public void setComments(List<CommentDTO> comments) {
         this.comments = comments;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

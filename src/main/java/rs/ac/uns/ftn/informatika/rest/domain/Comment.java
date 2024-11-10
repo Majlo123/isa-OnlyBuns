@@ -13,27 +13,25 @@ public class Comment {
     @Column(nullable = false)
     private String content;
 
-    // Konstruktor, getteri i setteri
-    public Comment() {
-    }
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    public Comment(String content) {
+    public Comment() {}
+
+    public Comment(String content, Long userId) {
         this.content = content;
+        this.userId = userId;
     }
 
-    public Long getId() {
-        return id;
+    // Getteri i setteri uključujući za userId
+
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }
+
+

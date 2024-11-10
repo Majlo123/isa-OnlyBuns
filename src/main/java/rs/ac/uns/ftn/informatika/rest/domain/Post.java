@@ -1,4 +1,5 @@
 package rs.ac.uns.ftn.informatika.rest.domain;
+
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ public class Post {
 
     @Column(nullable = false)
     private String description;
+
     private String title;
     private String imageUrl;
 
@@ -25,15 +27,19 @@ public class Post {
     @Column(nullable = false)
     private boolean deleted;
 
+    @Column(name = "user_id", nullable = false)
+    private Long userId;  // Novo polje za povezivanje sa korisnikom
+
     // Konstruktor, getteri i setteri
     public Post() {
         this.deleted = false;
     }
 
-    public Post(String title,String description, String imageUrl) {
+    public Post(String title, String description, String imageUrl, Long userId) {
+        this.title = title;
         this.description = description;
-        this.title=title;
         this.imageUrl = imageUrl;
+        this.userId = userId;
         this.likes = 0;
         this.deleted = false;
     }
@@ -53,6 +59,7 @@ public class Post {
     public void setDescription(String description) {
         this.description = description;
     }
+
     public String getTitle() {
         return title;
     }
@@ -91,5 +98,13 @@ public class Post {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }
