@@ -96,6 +96,15 @@ public class UserAccount {
             return null;
         }
     }
+    public Address convertJsonToAddress() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(address, Address.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     // Getteri i setteri za sva polja
 
     public Long getId() {

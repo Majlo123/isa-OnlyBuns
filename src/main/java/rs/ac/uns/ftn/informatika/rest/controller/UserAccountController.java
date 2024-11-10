@@ -25,8 +25,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import rs.ac.uns.ftn.informatika.rest.domain.Address;
 import rs.ac.uns.ftn.informatika.rest.domain.AuthRequest;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
+import rs.ac.uns.ftn.informatika.rest.domain.UserInfo;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
 import rs.ac.uns.ftn.informatika.rest.service.UserAccountService;
 
@@ -80,6 +82,24 @@ public class UserAccountController {
             return new ResponseEntity<String>(token, HttpStatus.OK);
         }
     }
+    @GetMapping(path = "/getUserInfo")
+    public ResponseEntity<UserInfo> getUserInfo(@RequestParam String email) {
+        List<UserAccount> acc = userAccountService.searchByEmail(email);
+        if(acc.isEmpty()){
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }else{
+            UserInfo userInfo = new UserInfo();
+            Address usersAddress = acc.get(0).convertJsonToAddress();
+
+            userInfo.address = usersAddress;
+            userInfo.email = email;
+            userInfo.firstName = acc.get(0).getFirstName();
+            userInfo.lastName = acc.get(0).getLastName();
+            return new ResponseEntity<>(userInfo, HttpStatus.OK);
+        }
+    }
+
+
 
     @Operation(description = "Delete user", method = "DELETE")
     @ApiResponses(value = {

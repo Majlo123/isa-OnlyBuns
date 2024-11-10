@@ -48,7 +48,9 @@ public class SecurityConfig {
         http.csrf(customizer -> customizer.disable());
         http.cors(Customizer.withDefaults());
         http.authorizeHttpRequests(request -> request
-                .requestMatchers("/api/userAccount/register","/api/userAccount/login","/swagger-ui/**",
+                .requestMatchers("/api/userAccount/register","/api/userAccount/login","api/posts",
+                        "/api/userAccount/getUserInfo",
+                        "/swagger-ui/**",
                         "/v3/api-docs/**",
                         "/api/userAccount/verify",
                         "/swagger-ui.html").permitAll().anyRequest().authenticated());
