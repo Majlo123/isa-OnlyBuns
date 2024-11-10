@@ -10,7 +10,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     private String content;
 
     @Column(name = "user_id", nullable = false)
@@ -23,8 +23,16 @@ public class Comment {
         this.userId = userId;
     }
 
-    // Getteri i setteri uključujući za userId
+    // Getter i setter za content
+    public String getContent() {
+        return content;
+    }
 
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    // Getter i setter za userId
     public Long getUserId() {
         return userId;
     }
@@ -33,5 +41,3 @@ public class Comment {
         this.userId = userId;
     }
 }
-
-
