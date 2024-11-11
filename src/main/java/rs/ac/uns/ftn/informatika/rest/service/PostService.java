@@ -28,11 +28,7 @@ public class PostService {
     }
     public Post updatePost(Long postId, PostDTO postDTO) {
         Post post = getPostById(postId);
-
-
-        post.setTitle(postDTO.getTitle());
         post.setDescription(postDTO.getDescription());
-        post.setImageUrl(postDTO.getImageUrl());
 
         return postRepository.save(post);
     }

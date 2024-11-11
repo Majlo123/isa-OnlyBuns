@@ -142,15 +142,22 @@ public class UserAccountServiceImpl implements UserAccountService {
         return userAccountRepository.findByFirstNameContaining(firstName);
     }
     @Override
-    public String verify(AuthRequest credentials){
-        Authentication authentication =
-                authManager.authenticate(new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword()));
-        if(authentication.isAuthenticated() && userAccountRepository.findByEmail(credentials.getUsername()).isEnabled()){
-            return jwtService.generateToken(credentials.getUsername());
-        }else {
-            return "Failure";
+    public String verify(AuthRequest credentials) {
+        Authentication authentication = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword()));
+
+
+        if (authentication.isAuthenticated()) {
+
+            UserAccount user = userAccountRepository.findByEmail(credentials.getUsername());
+
+            if (user != null && user.isEnabled()) {
+                return jwtService.generateToken(user.getEmail(), user.getId(), user.getRole());
+            }
         }
+        return "Failure";
     }
+
     @Override
     public boolean verifyVerificationCode(String verificationCode) {
         UserAccount user = userAccountRepository.findByVerificationCode(verificationCode);
