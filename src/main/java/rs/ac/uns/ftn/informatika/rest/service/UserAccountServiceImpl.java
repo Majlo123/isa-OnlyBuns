@@ -3,12 +3,10 @@ package rs.ac.uns.ftn.informatika.rest.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintViolationException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,11 +19,11 @@ import rs.ac.uns.ftn.informatika.rest.domain.AuthRequest;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
 import rs.ac.uns.ftn.informatika.rest.repository.InMemoryUserAccountRepository;
-import rs.ac.uns.ftn.informatika.rest.repository.UserAccountRepository;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserAccountServiceImpl implements UserAccountService {
@@ -140,6 +138,11 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     public List<UserAccount> searchByFirstName(String firstName) {
         return userAccountRepository.findByFirstNameContaining(firstName);
+    }
+    @Override
+    public String getEmailById(long userId) {
+       Optional<UserAccount> userAcc = userAccountRepository.findById(userId);
+       return userAcc.map(UserAccount::getEmail).orElse(null);
     }
     @Override
     public String verify(AuthRequest credentials) {

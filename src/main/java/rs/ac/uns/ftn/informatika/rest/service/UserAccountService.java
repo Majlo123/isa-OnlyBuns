@@ -19,9 +19,12 @@ public interface UserAccountService {
     UserAccount findById(Long id);
     //UserAccount update(UserAccountDTO userAccountDto, Long id) throws Exception;
     UserAccount delete(Long id);
+
+
     String verify(AuthRequest authRequest);
     void sendVerificationEmail(UserAccount savedAcc, HttpServletRequest request) throws Exception;
     boolean verifyVerificationCode(String verificationCode);
+    String getEmailById(long userId);
     List<UserAccount> searchByFirstName(String firstName);
     List<UserAccount> searchByLastName(String lastName);
     List<UserAccount> searchByEmail(String email);

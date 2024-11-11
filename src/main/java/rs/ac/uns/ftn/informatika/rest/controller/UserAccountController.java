@@ -123,7 +123,14 @@ public class UserAccountController {
             return "verify_fail";
         }
     }
-
+    @GetMapping("/{userId}/email")
+    public ResponseEntity<String> getEmailByUserId(@PathVariable("userId") Long userId) {
+        String email = userAccountService.getEmailById(userId);
+        if (email == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(email, HttpStatus.OK);
+    }
     // New search and sort endpoints
 
     @Operation(description = "Search users by first name", method = "GET")

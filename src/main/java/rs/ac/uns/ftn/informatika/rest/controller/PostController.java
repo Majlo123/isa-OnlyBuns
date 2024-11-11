@@ -1,6 +1,7 @@
 package rs.ac.uns.ftn.informatika.rest.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.informatika.rest.domain.Post;
@@ -56,6 +57,10 @@ public class PostController {
 
     @PostMapping("/{id}/comments")
     public ResponseEntity<Comment> addComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
-        return ResponseEntity.ok(postService.addComment(id, commentDTO));
+        if(commentDTO.getUserId() != 0) {
+            return ResponseEntity.ok(postService.addComment(id, commentDTO));
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 }

@@ -49,7 +49,8 @@ public class SecurityConfig {
         http.cors(Customizer.withDefaults());
         http.authorizeHttpRequests(request -> request
                 .requestMatchers("/api/userAccount/register","/api/userAccount/login","api/posts",
-                        "/api/userAccount/getUserInfo",
+                        "/api/userAccount/getUserInfo", "/api/posts/user/**", "/api/posts/**", "/api/userAccount/*/username",
+                        "/api/userAccount/*/email",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
                         "/api/userAccount/verify",
