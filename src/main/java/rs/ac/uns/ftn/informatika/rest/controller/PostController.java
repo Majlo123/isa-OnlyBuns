@@ -28,6 +28,11 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostById(id));
     }
 
+    @GetMapping("/user/{userId}")
+    public List<Post> getPostsByUserId(@PathVariable Long userId) {
+        return postService.getPostsByUserId(userId);
+    }
+
     @PostMapping
     public ResponseEntity<Post> createPost(@RequestBody PostDTO postDTO) {
         return ResponseEntity.ok(postService.createPost(postDTO));
@@ -37,6 +42,10 @@ public class PostController {
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody PostDTO postDTO) {
+        return ResponseEntity.ok(postService.updatePost(id, postDTO));
     }
 
     @PostMapping("/{id}/like")

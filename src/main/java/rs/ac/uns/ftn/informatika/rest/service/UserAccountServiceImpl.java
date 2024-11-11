@@ -58,7 +58,14 @@ public class UserAccountServiceImpl implements UserAccountService {
     public UserAccount findById(Long id) {
         return userAccountRepository.findById(id).orElse(null);
     }
-
+    @Override
+    public String getUsernameById(Long userId) {
+        UserAccount user = userAccountRepository.findById(userId).orElse(null);
+        if (user != null) {
+            return user.getFirstName() + " " + user.getLastName(); // Ili prilagodite prikaz korisničkog imena
+        }
+        return null;
+    }
     @Override
     public UserAccount create(UserAccountDTO accountDTO, HttpServletRequest request) throws Exception {
 
@@ -135,15 +142,22 @@ public class UserAccountServiceImpl implements UserAccountService {
         return userAccountRepository.findByFirstNameContaining(firstName);
     }
     @Override
-    public String verify(AuthRequest credentials){
-        Authentication authentication =
-                authManager.authenticate(new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword()));
-        if(authentication.isAuthenticated() && userAccountRepository.findByEmail(credentials.getUsername()).isEnabled()){
-            return jwtService.generateToken(credentials.getUsername());
-        }else {
-            return "Failure";
+    public String verify(AuthRequest credentials) {
+        Authentication authentication = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword()));
+
+
+        if (authentication.isAuthenticated()) {
+
+            UserAccount user = userAccountRepository.findByEmail(credentials.getUsername());
+
+            if (user != null && user.isEnabled()) {
+                return jwtService.generateToken(user.getEmail(), user.getId(), user.getRole());
+            }
         }
+        return "Failure";
     }
+
     @Override
     public boolean verifyVerificationCode(String verificationCode) {
         UserAccount user = userAccountRepository.findByVerificationCode(verificationCode);

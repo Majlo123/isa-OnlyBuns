@@ -8,6 +8,7 @@ import rs.ac.uns.ftn.informatika.rest.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.rest.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.rest.repository.CommentRepository;
 import rs.ac.uns.ftn.informatika.rest.repository.PostRepository;
+import rs.ac.uns.ftn.informatika.rest.repository.UserAccountRepository;
 import rs.ac.uns.ftn.informatika.rest.exception.ResourceNotFoundException;
 
 import java.util.List;
@@ -21,8 +22,15 @@ public class PostService {
     @Autowired
     private CommentRepository commentRepository;
 
+
     public List<Post> getAllPosts() {
         return postRepository.findAllByDeletedFalse();
+    }
+    public Post updatePost(Long postId, PostDTO postDTO) {
+        Post post = getPostById(postId);
+        post.setDescription(postDTO.getDescription());
+
+        return postRepository.save(post);
     }
 
     public Post getPostById(Long postId) {
@@ -30,8 +38,13 @@ public class PostService {
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
     }
 
+    public List<Post> getPostsByUserId(Long userId) {
+        return postRepository.findAllByUserIdAndDeletedFalse(userId);
+    }
+
     public Post createPost(PostDTO postDTO) {
-        Post post = new Post(postDTO.getTitle(),postDTO.getDescription(), postDTO.getImageUrl());
+        Long userId = postDTO.getUserId();
+        Post post = new Post(postDTO.getTitle(), postDTO.getDescription(), postDTO.getImageUrl(), userId);
         return postRepository.save(post);
     }
 
@@ -49,7 +62,7 @@ public class PostService {
 
     public Comment addComment(Long postId, CommentDTO commentDTO) {
         Post post = getPostById(postId);
-        Comment comment = new Comment(commentDTO.getContent());
+        Comment comment = new Comment(commentDTO.getContent(), commentDTO.getUserId());
         post.getComments().add(comment);
         postRepository.save(post);
         return comment;

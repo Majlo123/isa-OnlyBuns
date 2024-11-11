@@ -14,7 +14,7 @@ public interface UserAccountService {
 
     UserAccount create(UserAccountDTO userAccountDto, HttpServletRequest request) throws Exception;
     Collection<UserAccount> findAll();
-
+    String getUsernameById(Long userId);
     Page<UserAccount> findAll(Pageable pageable);
     UserAccount findById(Long id);
     //UserAccount update(UserAccountDTO userAccountDto, Long id) throws Exception;

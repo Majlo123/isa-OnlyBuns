@@ -3,8 +3,10 @@ package rs.ac.uns.ftn.informatika.rest.dto;
 public class CommentDTO {
     private Long id;
     private String content;
+    private Long userId;  // Novo polje za ID korisnika koji je kreirao komentar
 
-    // Getteri i setteri
+    // Getteri i setteri za sva polja, uključujući za userId
+
     public Long getId() {
         return id;
     }
@@ -19,5 +21,13 @@ public class CommentDTO {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }
