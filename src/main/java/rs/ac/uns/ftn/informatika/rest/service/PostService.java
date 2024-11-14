@@ -44,7 +44,7 @@ public class PostService {
 
     public Post createPost(PostDTO postDTO) {
         Long userId = postDTO.getUserId();
-        Post post = new Post(postDTO.getTitle(), postDTO.getDescription(), postDTO.getImageUrl(), userId);
+        Post post = new Post(postDTO.getTitle(), postDTO.getDescription(), postDTO.getImageUrl(), userId, postDTO.getLongitude(), postDTO.getLatitude(), postDTO.getDateOfCreation());
         return postRepository.save(post);
     }
 

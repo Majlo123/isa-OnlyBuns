@@ -10,7 +10,13 @@ import rs.ac.uns.ftn.informatika.rest.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.rest.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.rest.service.PostService;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -36,6 +42,30 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<Post> createPost(@RequestBody PostDTO postDTO) {
+        if (postDTO.getImageBase64() != null && !postDTO.getImageBase64().isEmpty()) {
+            try {
+                // Decode Base64
+                byte[] imageData = Base64.getDecoder().decode(postDTO.getImageBase64().split(",")[1]);
+
+
+                String fileName = UUID.randomUUID().toString() + ".jpg";  // Change extension if needed
+                Path imagePath = Paths.get("src/main/resources/static/images/posts");
+
+                // Ensure the directory exists
+                Files.createDirectories(imagePath);
+
+                // Create file path and save image
+                Path filePath = imagePath.resolve(fileName);
+                Files.write(filePath, imageData);
+
+                // Set the image URL in the Post entity
+                postDTO.setImageUrl("images/posts/" + fileName);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return ResponseEntity.status(500).build();
+            }
+        }
         return ResponseEntity.ok(postService.createPost(postDTO));
     }
 

@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.informatika.rest.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class PostDTO {
@@ -10,6 +11,10 @@ public class PostDTO {
     private int likes;
     private List<CommentDTO> comments;
     private Long userId;  // Novo polje za ID korisnika koji je kreirao post
+    private int longitude;
+    private int latitude;
+    private LocalDateTime dateOfCreation;
+    private String imageBase64;
 
     // Getteri i setteri za sva polja, uključujući za userId
 
@@ -67,5 +72,37 @@ public class PostDTO {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public int getLongitude() {
+        return this.longitude;
+    }
+
+    public void setLongitude(int longitude) {
+        this.longitude = longitude;
+    }
+
+    public int getLatitude() {
+        return this.latitude;
+    }
+
+    public void setLatitude(int latitude) {
+        this.latitude = latitude;
+    }
+
+    public LocalDateTime getDateOfCreation(){
+        return this.dateOfCreation;
+    }
+
+    public void setDateOfCreation(LocalDateTime dateOfCreation){
+        this.dateOfCreation = dateOfCreation;
+    }
+
+    public String getImageBase64() {
+        return this.imageBase64;
+    }
+
+    public void setImageBase64(String imageBase64) {
+        this.imageBase64 = imageBase64;
     }
 }

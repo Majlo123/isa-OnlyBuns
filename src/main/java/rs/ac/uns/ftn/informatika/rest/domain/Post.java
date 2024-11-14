@@ -1,6 +1,8 @@
 package rs.ac.uns.ftn.informatika.rest.domain;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +19,6 @@ public class Post {
 
     private String title;
     private String imageUrl;
-
     private int likes;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -30,18 +31,25 @@ public class Post {
     @Column(name = "user_id", nullable = false)
     private Long userId;  // Novo polje za povezivanje sa korisnikom
 
+    private int longitude;
+    private int latitude;
+    private LocalDateTime dateOfCreation;
+
     // Konstruktor, getteri i setteri
     public Post() {
         this.deleted = false;
     }
 
-    public Post(String title, String description, String imageUrl, Long userId) {
+    public Post(String title, String description, String imageUrl, Long userId, int longitude, int latitude, LocalDateTime dateOfCreation) {
         this.title = title;
         this.description = description;
         this.imageUrl = imageUrl;
         this.userId = userId;
         this.likes = 0;
         this.deleted = false;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.dateOfCreation = dateOfCreation;
     }
 
     public Long getId() {
@@ -107,4 +115,30 @@ public class Post {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+
+    public int getLongitude() {
+        return this.longitude;
+    }
+
+    public void setLongitude(int longitude) {
+        this.longitude = longitude;
+    }
+
+    public int getLatitude() {
+        return this.latitude;
+    }
+
+    public void setLatitude(int latitude) {
+        this.latitude = latitude;
+    }
+
+    public LocalDateTime getDateOfCreation(){
+        return this.dateOfCreation;
+    }
+
+    public void setDateOfCreation(LocalDateTime dateOfCreation){
+        this.dateOfCreation = dateOfCreation;
+    }
+
+
 }
