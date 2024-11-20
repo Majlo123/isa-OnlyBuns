@@ -54,6 +54,7 @@ public class PostService {
         postRepository.save(post);
     }
 
+    //edit ----------------------- conflict situation
     public void likePost(Long postId) {
         Post post = getPostById(postId);
         post.setLikes(post.getLikes() + 1);

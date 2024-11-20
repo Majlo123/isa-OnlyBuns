@@ -9,18 +9,23 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import rs.ac.uns.ftn.informatika.rest.config.Utility;
+import rs.ac.uns.ftn.informatika.rest.controller.UserAccountController;
 import rs.ac.uns.ftn.informatika.rest.domain.AuthRequest;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
 import rs.ac.uns.ftn.informatika.rest.repository.InMemoryUserAccountRepository;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +46,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     @Autowired
     private JavaMailSender mailSender;
+    private UserAccountController userAccountController;
 
     @Autowired
     public UserAccountServiceImpl(InMemoryUserAccountRepository userAccountRepository) {
@@ -113,6 +119,38 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     }
 
+    private void sendInactivityEmail(UserAccount userAccount) throws MessagingException, UnsupportedEncodingException {
+        String toAddress = userAccount.getEmail();
+        String fromAddress = "onlybunsteam@gmail.com";
+        String subject = "7 Day Inactivity Summary";
+        String senderName = "OnlyBuns Team";
+        String content = "<p>Dear "+userAccount.getFirstName() + ",<p>";
+        content += "<p>You have been inactive since " + userAccount.getLastTimeUsed() + "<p>";
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
+
+        helper.setFrom(fromAddress, senderName);
+        helper.setTo(toAddress);
+        helper.setSubject(subject);
+        helper.setText(content, true); // Setting 'true' enables HTML
+
+        mailSender.send(message);
+    }
+
+    //@Scheduled(cron = "0 0 0 */7 * *")
+    //@Scheduled(fixedRate = 60 * 1000)
+    private void checkInactivity() throws MessagingException, UnsupportedEncodingException {
+        List<UserAccount> userAccounts = userAccountRepository.findAll();
+
+        for (UserAccount userAccount : userAccounts) {
+            if (ChronoUnit.DAYS.between(
+                    userAccount.getLastTimeUsed().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                    LocalDate.now()) >= 7) {
+                sendInactivityEmail(userAccount);
+            }
+        }
+    }
     @Override
     public UserAccount delete(Long id) {
         UserAccount deletedAcc = userAccountRepository.findById(id).orElse(null);
@@ -120,7 +158,7 @@ public class UserAccountServiceImpl implements UserAccountService {
         return deletedAcc;
     }
 
-    /*@Override
+    @Override
     public UserAccount update(UserAccountDTO userAccountDto, Long id) throws Exception {
         return userAccountRepository.findById(id)
                 .map(existingUserAccount -> {
@@ -129,11 +167,12 @@ public class UserAccountServiceImpl implements UserAccountService {
                     existingUserAccount.setEmail(userAccountDto.getEmail());
                     existingUserAccount.setPassword(userAccountDto.getPassword());
                     existingUserAccount.setFollowersCount(userAccountDto.getFollowersCount());
-                    existingUserAccount.setAddress(userAccountDto.getAddress());
+                    existingUserAccount.setAddress(userAccountDto.getAddress().toString());
+                    existingUserAccount.setLastTimeUsed(userAccountDto.getLastTimeUsed());
                     return userAccountRepository.save(existingUserAccount);
                 })
                 .orElseThrow(() -> new Exception("UserAccount not found with id: " + id));
-    }*/
+    }
 
 
     public List<UserAccount> searchByFirstName(String firstName) {
@@ -199,3 +238,4 @@ public class UserAccountServiceImpl implements UserAccountService {
         return userAccountRepository.findAllSortedByEmail();
     }
 }
+

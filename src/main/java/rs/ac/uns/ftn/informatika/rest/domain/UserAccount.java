@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
 
+import java.time.temporal.Temporal;
+import java.util.Date;
+
 @Entity
 @Table(name = "UserAccounts")
 public class UserAccount {
@@ -38,12 +41,14 @@ public class UserAccount {
     @Column(name = "post_count")
     private int postCount;
 
-
-
     @Column(name = "verification_code")
     private String verificationCode;
+
     @Column(name = "is_enabled")
     private boolean isEnabled;
+
+    @Column(name = "last_time_used")
+    private Date lastTimeUsed;
 
     public String getVerificationCode() {
         return verificationCode;
@@ -171,8 +176,6 @@ public class UserAccount {
         this.postCount = postCount;
     }
 
-
-
     public String getRole() {
         return role;
     }
@@ -180,4 +183,8 @@ public class UserAccount {
     public void setRole(String role) {
         this.role = role;
     }
+
+    public Date getLastTimeUsed(){ return lastTimeUsed; }
+
+    public void setLastTimeUsed(Date lastTimeUsed) { this.lastTimeUsed = lastTimeUsed; }
 }
