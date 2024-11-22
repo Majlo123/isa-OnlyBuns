@@ -47,6 +47,8 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Autowired
     private JavaMailSender mailSender;
     private UserAccountController userAccountController;
+    @Autowired
+    private FollowInfoService followInfoService;
 
     @Autowired
     public UserAccountServiceImpl(InMemoryUserAccountRepository userAccountRepository) {
@@ -126,6 +128,10 @@ public class UserAccountServiceImpl implements UserAccountService {
         String senderName = "OnlyBuns Team";
         String content = "<p>Dear "+userAccount.getFirstName() + ",<p>";
         content += "<p>You have been inactive since " + userAccount.getLastTimeUsed() + "<p>";
+        content += "<p>In the meantime You received " + (long) followInfoService.getAllForSevenDaysForUser(userAccount.getId()).size() + " followers!<p>";
+        content += "<p>Also Your post have made " + 5 + " likes in total!";
+        content += "<p>Congratulations!<p>";
+        content += "<p>The OnlyBuns Team</p>";
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
