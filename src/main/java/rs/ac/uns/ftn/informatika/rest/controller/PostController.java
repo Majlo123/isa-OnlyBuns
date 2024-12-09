@@ -87,6 +87,7 @@ public class PostController {
 
     @PostMapping("/{id}/comments")
     public ResponseEntity<Comment> addComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
+        System.out.println("Iddddddddddd------------: " + id);
         if(commentDTO.getUserId() != 0) {
             return ResponseEntity.ok(postService.addComment(id, commentDTO));
         } else {

@@ -1,16 +1,17 @@
 package rs.ac.uns.ftn.informatika.rest.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.rest.domain.Post;
 import rs.ac.uns.ftn.informatika.rest.domain.Comment;
 import rs.ac.uns.ftn.informatika.rest.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.rest.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.rest.repository.CommentRepository;
 import rs.ac.uns.ftn.informatika.rest.repository.PostRepository;
-import rs.ac.uns.ftn.informatika.rest.repository.UserAccountRepository;
 import rs.ac.uns.ftn.informatika.rest.exception.ResourceNotFoundException;
-
+import org.springframework.transaction.annotation.Isolation;
 import java.util.List;
 
 @Service
@@ -26,6 +27,7 @@ public class PostService {
     public List<Post> getAllPosts() {
         return postRepository.findAllByDeletedFalse();
     }
+
     public Post updatePost(Long postId, PostDTO postDTO) {
         Post post = getPostById(postId);
         post.setDescription(postDTO.getDescription());
@@ -45,6 +47,7 @@ public class PostService {
     public Post createPost(PostDTO postDTO) {
         Long userId = postDTO.getUserId();
         Post post = new Post(postDTO.getTitle(), postDTO.getDescription(), postDTO.getImageUrl(), userId, postDTO.getLongitude(), postDTO.getLatitude(), postDTO.getDateOfCreation());
+
         return postRepository.save(post);
     }
 
@@ -54,11 +57,25 @@ public class PostService {
         postRepository.save(post);
     }
 
-    //edit ----------------------- conflict situation
+    //edit ----------------------- conflict situation, still needs updates
+    @Transactional
     public void likePost(Long postId) {
-        Post post = getPostById(postId);
+
+        System.out.println("Post with id ready to be liked: " + postId);
+        Post post = postRepository.findByIdWithLock(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post with id: " + postId + " not found!!!"));
+
+        // Simulacija konkurencije (samo za testiranje)
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
         post.setLikes(post.getLikes() + 1);
-        postRepository.save(post);
+        System.out.println("Post with id:" + post.getId() + " liked!");
+
+        postRepository.saveAndFlush(post);
     }
 
     public Comment addComment(Long postId, CommentDTO commentDTO) {

@@ -37,6 +37,15 @@ public class Post {
 
     // Konstruktor, getteri i setteri
     public Post() {
+        this.title = "";
+        this.description = "";
+        this.imageUrl = "";
+        this.likes = 0;
+        this.comments = new ArrayList<>();
+        this.userId = null;
+        this.longitude = 0;
+        this.latitude = 0;
+        this.dateOfCreation = LocalDateTime.now();
         this.deleted = false;
     }
 

@@ -127,11 +127,12 @@ public class UserAccountServiceImpl implements UserAccountService {
         String subject = "7 Day Inactivity Summary";
         String senderName = "OnlyBuns Team";
         String content = "<p>Dear "+userAccount.getFirstName() + ",<p>";
-        content += "<p>You have been inactive since " + userAccount.getLastTimeUsed() + "<p>";
-        content += "<p>In the meantime You received " + (long) followInfoService.getAllForSevenDaysForUser(userAccount.getId()).size() + " followers!<p>";
-        content += "<p>Also Your post have made " + 5 + " likes in total!";
+        content += "<p>You have been inactive since " + userAccount.getLastTimeUsed() + "<p><br>";
+        content += "<p>In the last 7 days you received " + (long) followInfoService.getAllForSevenDaysForUser(userAccount.getId()).size() + " followers!<p>";
+        content += "<p>Also your posts have gotten " + 5 + " likes in the last 7 days!";
+        content += "<p>Dive deep again in the world of bunnies: <a href= https://dailybunny.org/>BunnyWorld</a><p>";
         content += "<p>Congratulations!<p>";
-        content += "<p>The OnlyBuns Team</p>";
+        content += "<br><p>The OnlyBuns Team</p>";
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
@@ -139,7 +140,7 @@ public class UserAccountServiceImpl implements UserAccountService {
         helper.setFrom(fromAddress, senderName);
         helper.setTo(toAddress);
         helper.setSubject(subject);
-        helper.setText(content, true); // Setting 'true' enables HTML
+        helper.setText(content, true);
 
         mailSender.send(message);
     }
