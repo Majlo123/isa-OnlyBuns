@@ -58,14 +58,11 @@ public class PostService {
     }
 
     //edit ----------------------- conflict situation, still needs updates
-    @Transactional
+    @Transactional(readOnly = false)
     public void likePost(Long postId) {
 
-        System.out.println("Post with id ready to be liked: " + postId);
-        Post post = postRepository.findByIdWithLock(postId)
-                .orElseThrow(() -> new EntityNotFoundException("Post with id: " + postId + " not found!!!"));
+        Post post = postRepository.findByIdWithLock(postId).orElseThrow(() -> new EntityNotFoundException("Post with id: " + postId + " not found!!!"));
 
-        // Simulacija konkurencije (samo za testiranje)
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -75,7 +72,7 @@ public class PostService {
         post.setLikes(post.getLikes() + 1);
         System.out.println("Post with id:" + post.getId() + " liked!");
 
-        postRepository.saveAndFlush(post);
+        postRepository.save(post);
     }
 
     public Comment addComment(Long postId, CommentDTO commentDTO) {

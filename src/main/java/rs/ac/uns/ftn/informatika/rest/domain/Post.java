@@ -42,7 +42,7 @@ public class Post {
         this.imageUrl = "";
         this.likes = 0;
         this.comments = new ArrayList<>();
-        this.userId = null;
+        this.userId = 0L;
         this.longitude = 0;
         this.latitude = 0;
         this.dateOfCreation = LocalDateTime.now();

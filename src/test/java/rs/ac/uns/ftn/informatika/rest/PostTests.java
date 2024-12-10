@@ -1,6 +1,8 @@
 package rs.ac.uns.ftn.informatika.rest;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,27 +25,35 @@ public class PostTests {
     @Autowired
     private PostRepository postRepository;
 
+    @AfterEach
+    public void tearDown() {
+        postRepository.deleteAll();
+    }
+
     @Test
-    @Transactional
     public void testConcurrentLikePost() throws InterruptedException {
         postRepository.deleteAll();
-        // Priprema podataka
-    ///dodaj pravljenje posta-----------!!
+
+        Post post = new Post();
+        post.setUserId(-100L);
+        post.setDescription("Test Post");
+        post = postRepository.save(post);
+
+        long postId = post.getId();
 
         // Simulacija konkurencije
         ExecutorService executor = Executors.newFixedThreadPool(5);
         for (int i = 0; i < 5; i++) {
-            executor.execute(() -> postService.likePost(55L));
+            executor.execute(() -> postService.likePost(postId));
         }
 
         executor.shutdown();
         while (!executor.isTerminated()) {
-            // Čeka da se sve niti završe
+
         }
 
         // Provera rezultata
-        Post updatedPost = postRepository.findByIdWithLock(55L)
-                .orElseThrow(() -> new EntityNotFoundException("Post with id: " + 55L + " not found! Why?"));
+        Post updatedPost = postService.getPostById(postId);
 
         System.out.println("Post Id: " + updatedPost.getId());
         System.out.println("Post description: " + updatedPost.getDescription());
