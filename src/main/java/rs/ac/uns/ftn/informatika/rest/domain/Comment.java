@@ -2,6 +2,8 @@ package rs.ac.uns.ftn.informatika.rest.domain;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "comments")
 public class Comment {
@@ -16,11 +18,15 @@ public class Comment {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    @Column(name = "createdAt", nullable = false)
+    private LocalDateTime createdAt;
+
     public Comment() {}
 
-    public Comment(String content, Long userId) {
+    public Comment(String content, Long userId, LocalDateTime createdAt) {
         this.content = content;
         this.userId = userId;
+        this.createdAt = createdAt;
     }
 
     // Getter i setter za content
@@ -40,4 +46,8 @@ public class Comment {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+
+    public LocalDateTime getCreatedAt() { return this.createdAt;}
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt;}
+
 }

@@ -12,6 +12,9 @@ import rs.ac.uns.ftn.informatika.rest.repository.CommentRepository;
 import rs.ac.uns.ftn.informatika.rest.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.rest.exception.ResourceNotFoundException;
 import org.springframework.transaction.annotation.Isolation;
+
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -25,8 +28,9 @@ public class PostService {
 
 
     public List<Post> getAllPosts() {
-        return postRepository.findAllByDeletedFalse();
+        return postRepository.findAllPostsWithSortedComments();
     }
+
 
     public Post updatePost(Long postId, PostDTO postDTO) {
         Post post = getPostById(postId);
@@ -57,12 +61,12 @@ public class PostService {
         postRepository.save(post);
     }
 
-    //edit ----------------------- conflict situation, still needs updates
     @Transactional(readOnly = false)
     public void likePost(Long postId) {
 
         Post post = postRepository.findByIdWithLock(postId).orElseThrow(() -> new EntityNotFoundException("Post with id: " + postId + " not found!!!"));
 
+        //For testing
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -70,14 +74,20 @@ public class PostService {
         }
 
         post.setLikes(post.getLikes() + 1);
-        System.out.println("Post with id:" + post.getId() + " liked!");
 
         postRepository.save(post);
     }
 
     public Comment addComment(Long postId, CommentDTO commentDTO) {
         Post post = getPostById(postId);
-        Comment comment = new Comment(commentDTO.getContent(), commentDTO.getUserId());
+        Comment comment = new Comment(commentDTO.getContent(), commentDTO.getUserId(), commentDTO.getCreatedAt());
+
+        LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(2);
+        int commentCount = postRepository.countCommentsInLastHour(comment.getUserId(), oneHourAgo);
+
+        if (commentCount >= 60) {
+            throw new IllegalArgumentException("You have reached the limit of 60 comments per hour.");
+        }
         post.getComments().add(comment);
         postRepository.save(post);
         return comment;
