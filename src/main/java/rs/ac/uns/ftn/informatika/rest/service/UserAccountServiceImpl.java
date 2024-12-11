@@ -54,6 +54,9 @@ public class UserAccountServiceImpl implements UserAccountService {
     public UserAccountServiceImpl(InMemoryUserAccountRepository userAccountRepository) {
         this.userAccountRepository = userAccountRepository;
     }
+    public boolean isFollowing(Long currentUserId, Long userId) {
+        return followRepository.existsByFollowerIdAndFolloweeId(currentUserId, userId);
+    }
 
     @Transactional
     public void followUser(Long currentUserId, Long targetUserId) {

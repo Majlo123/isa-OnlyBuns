@@ -21,7 +21,7 @@ public interface UserAccountService {
     UserAccount delete(Long id);
     void followUser(Long currentUserId, Long targetUserId);
     void unfollowUser(Long currentUserId, Long targetUserId);
-
+    boolean isFollowing(Long currentUserId, Long userId);
     String verify(AuthRequest authRequest);
     void sendVerificationEmail(UserAccount savedAcc, HttpServletRequest request) throws Exception;
     boolean verifyVerificationCode(String verificationCode);

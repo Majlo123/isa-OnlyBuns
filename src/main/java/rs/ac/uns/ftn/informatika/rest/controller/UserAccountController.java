@@ -130,6 +130,12 @@ public class UserAccountController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // Nešto nije u redu
         }
     }
+    @GetMapping("/{currentUserId}/follows/{userId}")
+    public ResponseEntity<Boolean> isFollowing(@PathVariable("currentUserId") Long currentUserId,
+                                               @PathVariable("userId") Long userId) {
+        boolean follows = userAccountService.isFollowing(currentUserId, userId);
+        return ResponseEntity.ok(follows);
+    }
 
     @PutMapping("/{currentUserId}/unfollow/{userId}")
     public ResponseEntity<Void> unfollowUser(@PathVariable("currentUserId") Long currentUserId,

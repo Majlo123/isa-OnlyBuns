@@ -10,4 +10,5 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByDeletedFalse();
     List<Post> findAllByUserIdAndDeletedFalse(Long userId);
+    List<Post> findByUserIdIn(List<Long> userIds);
 }

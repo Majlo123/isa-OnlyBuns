@@ -84,7 +84,11 @@ public class PostController {
         postService.likePost(id);
         return ResponseEntity.noContent().build();
     }
-
+    @GetMapping("/following/{userId}")
+    public ResponseEntity<List<Post>> getPostsByFollowing(@PathVariable Long userId) {
+        List<Post> posts = postService.getPostsByFollowing(userId);
+        return ResponseEntity.ok(posts);
+    }
     @PostMapping("/{id}/comments")
     public ResponseEntity<Comment> addComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
         if(commentDTO.getUserId() != 0) {
