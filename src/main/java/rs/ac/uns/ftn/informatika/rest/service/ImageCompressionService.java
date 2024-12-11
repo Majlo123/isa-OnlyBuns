@@ -20,8 +20,8 @@ public class ImageCompressionService {
     private final Path compressedImageDirectoryPath = Paths.get("src", "main", "resources", "static", "compressedImages", "posts");
     private final String compressedImageDirectory = compressedImageDirectoryPath.toAbsolutePath().toString();
 
-    //@Scheduled(cron = "0 0 0 * * ?") // Cron expression for daily execution at midnight
-    @Scheduled(cron = "*/1 * * * * ?") // Every second for testing
+    @Scheduled(cron = "0 0 0 * * ?") // Cron expression for daily execution at midnight
+    //@Scheduled(cron = "*/1 * * * * ?") // Every second for testing
     public void compressOldImages() {
         String imageDirectory = Paths.get("src", "main", "resources", "static", "images", "posts").toString();
 
@@ -46,9 +46,9 @@ public class ImageCompressionService {
     }
 
     private boolean isOlderThanOneMonth(File file) {
-        //long oneMonthInMillis = 30L * 24 * 60 * 60 * 1000;
-        long oneSecondInMillis = (long) 1000; // One second for testing
-        return new Date().getTime() - file.lastModified() > oneSecondInMillis;
+        long oneMonthInMillis = 30L * 24 * 60 * 60 * 1000;
+        //long oneSecondInMillis = (long) 1000; // One second for testing
+        return new Date().getTime() - file.lastModified() > oneMonthInMillis;
     }
 
     private boolean isUncompressed(File file) {
@@ -70,7 +70,14 @@ public class ImageCompressionService {
 
     private void compressImage(File uncompressedFile) throws IOException {
 
+        if (!uncompressedFile.exists() || !uncompressedFile.canRead()) {
+            throw new IOException("File does not exist or cannot be read: " + uncompressedFile.getAbsolutePath());
+        }
+
         BufferedImage image = ImageIO.read(uncompressedFile);
+        if (image == null) {
+            throw new IOException("Failed to read the image file: " + uncompressedFile.getAbsolutePath());
+        }
 
         int targetWidth = 500;
         int targetHeight = 500;

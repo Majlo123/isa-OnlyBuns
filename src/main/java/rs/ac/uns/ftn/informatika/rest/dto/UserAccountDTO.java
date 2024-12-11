@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import rs.ac.uns.ftn.informatika.rest.domain.Address;
 
+import java.util.Date;
+
 public class UserAccountDTO {
 
     @NotEmpty
@@ -18,7 +20,6 @@ public class UserAccountDTO {
 
     @NotEmpty
     private String password;
-
 
     private Address address;
 
@@ -36,7 +37,7 @@ public class UserAccountDTO {
     @Min(value = 0)
     private int postCount;
 
-
+    private Date lastTimeUsed;
 
     public UserAccountDTO() {
     }
@@ -75,8 +76,6 @@ public class UserAccountDTO {
         this.password = password;
     }
 
-
-
     public int getFollowersCount() {
         return followersCount;
     }
@@ -93,5 +92,7 @@ public class UserAccountDTO {
         this.postCount = postCount;
     }
 
+    public Date getLastTimeUsed() { return lastTimeUsed; }
 
+    public void setLastTimeUsed(Date lastTimeUsed) { this.lastTimeUsed = lastTimeUsed; }
 }

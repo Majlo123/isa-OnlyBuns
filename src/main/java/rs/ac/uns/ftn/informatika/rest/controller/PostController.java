@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.informatika.rest.domain.Post;
-import rs.ac.uns.ftn.informatika.rest.domain.Comment;
 import rs.ac.uns.ftn.informatika.rest.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.rest.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.rest.service.PostService;
@@ -90,11 +89,18 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
     @PostMapping("/{id}/comments")
-    public ResponseEntity<Comment> addComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
-        if(commentDTO.getUserId() != 0) {
-            return ResponseEntity.ok(postService.addComment(id, commentDTO));
-        } else {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<String> addComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
+        try {
+            if(commentDTO.getUserId() != 0){
+                postService.addComment(id, commentDTO);
+                return ResponseEntity.ok().build();
+            }else{
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+
     }
 }

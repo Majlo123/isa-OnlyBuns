@@ -1,10 +1,12 @@
 package rs.ac.uns.ftn.informatika.rest.dto;
 
+import java.time.LocalDateTime;
+
 public class CommentDTO {
     private Long id;
     private String content;
     private Long userId;  // Novo polje za ID korisnika koji je kreirao komentar
-
+    private LocalDateTime createdAt;
     // Getteri i setteri za sva polja, uključujući za userId
 
     public Long getId() {
@@ -30,4 +32,7 @@ public class CommentDTO {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
