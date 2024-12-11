@@ -10,6 +10,7 @@ import rs.ac.uns.ftn.informatika.rest.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.rest.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.rest.repository.CommentRepository;
 import rs.ac.uns.ftn.informatika.rest.repository.PostRepository;
+import rs.ac.uns.ftn.informatika.rest.repository.FollowRepository; // Dodato
 import rs.ac.uns.ftn.informatika.rest.exception.ResourceNotFoundException;
 import org.springframework.transaction.annotation.Isolation;
 
@@ -26,17 +27,25 @@ public class PostService {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private FollowRepository followRepository; // Dodato
 
     public List<Post> getAllPosts() {
         return postRepository.findAllPostsWithSortedComments();
     }
 
-
     public Post updatePost(Long postId, PostDTO postDTO) {
         Post post = getPostById(postId);
         post.setDescription(postDTO.getDescription());
-
         return postRepository.save(post);
+    }
+
+    public List<Post> getPostsByFollowing(Long userId) {
+        // Pronađi ID-ove korisnika koje trenutni korisnik prati
+        List<Long> followingUserIds = followRepository.findFolloweeIdsByFollowerId(userId);
+
+        // Pronađi postove koje su ti korisnici napravili
+        return postRepository.findByUserIdIn(followingUserIds);
     }
 
     public Post getPostById(Long postId) {

@@ -114,6 +114,44 @@ public class UserAccountController {
         }
         return new ResponseEntity<UserAccount>(HttpStatus.NO_CONTENT);
     }
+    @PutMapping("/{currentUserId}/follow/{userId}")
+    public ResponseEntity<Void> followUser(@PathVariable("currentUserId") Long currentUserId,
+                                           @PathVariable("userId") Long userId) {
+        if (currentUserId.equals(userId)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Ne možete pratiti samog sebe
+        }
+
+        try {
+            userAccountService.followUser(currentUserId, userId);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS); // Rate limit prekoračen
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // Nešto nije u redu
+        }
+    }
+    @GetMapping("/{currentUserId}/follows/{userId}")
+    public ResponseEntity<Boolean> isFollowing(@PathVariable("currentUserId") Long currentUserId,
+                                               @PathVariable("userId") Long userId) {
+        boolean follows = userAccountService.isFollowing(currentUserId, userId);
+        return ResponseEntity.ok(follows);
+    }
+
+    @PutMapping("/{currentUserId}/unfollow/{userId}")
+    public ResponseEntity<Void> unfollowUser(@PathVariable("currentUserId") Long currentUserId,
+                                             @PathVariable("userId") Long userId) {
+        if (currentUserId.equals(userId)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Ne možete otpratiti samog sebe
+        }
+
+        try {
+            userAccountService.unfollowUser(currentUserId, userId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // Nešto nije u redu
+        }
+    }
+
 
     @GetMapping("/verify")
     public String verifyUser(@Param("code") String code) {
