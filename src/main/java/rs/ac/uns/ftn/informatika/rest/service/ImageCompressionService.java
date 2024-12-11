@@ -70,7 +70,14 @@ public class ImageCompressionService {
 
     private void compressImage(File uncompressedFile) throws IOException {
 
+        if (!uncompressedFile.exists() || !uncompressedFile.canRead()) {
+            throw new IOException("File does not exist or cannot be read: " + uncompressedFile.getAbsolutePath());
+        }
+
         BufferedImage image = ImageIO.read(uncompressedFile);
+        if (image == null) {
+            throw new IOException("Failed to read the image file: " + uncompressedFile.getAbsolutePath());
+        }
 
         int targetWidth = 500;
         int targetHeight = 500;
