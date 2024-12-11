@@ -1,12 +1,16 @@
 package rs.ac.uns.ftn.informatika.rest.repository;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -22,6 +26,9 @@ public interface InMemoryUserAccountRepository extends JpaRepository<UserAccount
    List<UserAccount> findByEmailContaining(String email);
 
    List<UserAccount> findByPostCountBetween(int minPosts, int maxPosts);
+   @Lock(LockModeType.PESSIMISTIC_WRITE)
+   @Query("SELECT u FROM UserAccount u WHERE u.id = :id")
+   Optional<UserAccount> findByIdWithLock(@Param("id") Long id);
 
    @Query("SELECT u FROM UserAccount u ORDER BY u.followersCount ASC")
    List<UserAccount> findAllSortedByFollowingCount();
