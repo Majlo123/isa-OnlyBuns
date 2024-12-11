@@ -3,6 +3,7 @@ package rs.ac.uns.ftn.informatika.rest.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,11 +17,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import rs.ac.uns.ftn.informatika.rest.config.Utility;
 import rs.ac.uns.ftn.informatika.rest.domain.AuthRequest;
+import rs.ac.uns.ftn.informatika.rest.domain.Follow;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
+import rs.ac.uns.ftn.informatika.rest.repository.FollowRepository;
 import rs.ac.uns.ftn.informatika.rest.repository.InMemoryUserAccountRepository;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +36,8 @@ public class UserAccountServiceImpl implements UserAccountService {
     private final InMemoryUserAccountRepository userAccountRepository;
 
     @Autowired
+    private FollowRepository followRepository;
+    @Autowired
     private AuthenticationManager authManager;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
@@ -42,11 +48,67 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Autowired
     private JavaMailSender mailSender;
 
+    private static final int FOLLOW_LIMIT_PER_MINUTE = 50;
+
     @Autowired
     public UserAccountServiceImpl(InMemoryUserAccountRepository userAccountRepository) {
         this.userAccountRepository = userAccountRepository;
     }
 
+    @Transactional
+    public void followUser(Long currentUserId, Long targetUserId) {
+        if (currentUserId.equals(targetUserId)) {
+            throw new IllegalArgumentException("Ne možete pratiti sami sebe");
+        }
+
+        // Provera rate limita
+        LocalDateTime oneMinuteAgo = LocalDateTime.now().minusMinutes(1);
+        long count = followRepository.countFollowsInLastMinute(currentUserId, oneMinuteAgo);
+        if (count >= FOLLOW_LIMIT_PER_MINUTE) {
+            throw new RuntimeException("Prekoračili ste broj dozvoljenih praćenja po minutu (max 50).");
+        }
+
+        // Provera da li već prati
+        if (followRepository.existsByFollowerIdAndFolloweeId(currentUserId, targetUserId)) {
+            // Već prati ovog korisnika, ne radimo ništa
+            return;
+        }
+
+        // Dohvati korisnika koga pratimo
+        UserAccount userToFollow = userAccountRepository.findById(targetUserId)
+                .orElseThrow(() -> new RuntimeException("Korisnik nije pronađen"));
+
+        // Kreiraj Follow zapis
+        Follow follow = new Follow();
+        follow.setFollowerId(currentUserId);
+        follow.setFolloweeId(targetUserId);
+        follow.setFollowedAt(LocalDateTime.now());
+        followRepository.save(follow);
+
+        // Uvećaj broj pratilaca
+        userToFollow.setFollowersCount(userToFollow.getFollowersCount() + 1);
+        userAccountRepository.save(userToFollow);
+    }
+
+    @Transactional
+    public void unfollowUser(Long currentUserId, Long targetUserId) {
+        // Provera da li prati
+        if (!followRepository.existsByFollowerIdAndFolloweeId(currentUserId, targetUserId)) {
+            // Ne prati ovog korisnika
+            return;
+        }
+
+        // Obriši Follow zapis
+        followRepository.deleteByFollowerIdAndFolloweeId(currentUserId, targetUserId);
+
+        // Smanji broj pratilaca kod targetUserId
+        UserAccount userToUnfollow = userAccountRepository.findById(targetUserId)
+                .orElseThrow(() -> new RuntimeException("Korisnik nije pronađen"));
+
+        // Osigurati da ne padnemo u negativan broj
+        userToUnfollow.setFollowersCount(Math.max(0, userToUnfollow.getFollowersCount() - 1));
+        userAccountRepository.save(userToUnfollow);
+    }
     @Override
     public Page<UserAccount> findAll(Pageable pageable) {
         return userAccountRepository.findAll(pageable);

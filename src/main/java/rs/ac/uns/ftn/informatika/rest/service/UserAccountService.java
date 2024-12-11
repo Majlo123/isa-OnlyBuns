@@ -19,7 +19,8 @@ public interface UserAccountService {
     UserAccount findById(Long id);
     //UserAccount update(UserAccountDTO userAccountDto, Long id) throws Exception;
     UserAccount delete(Long id);
-
+    void followUser(Long currentUserId, Long targetUserId);
+    void unfollowUser(Long currentUserId, Long targetUserId);
 
     String verify(AuthRequest authRequest);
     void sendVerificationEmail(UserAccount savedAcc, HttpServletRequest request) throws Exception;
