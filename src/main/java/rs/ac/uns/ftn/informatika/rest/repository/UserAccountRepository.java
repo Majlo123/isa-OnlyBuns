@@ -18,6 +18,7 @@ public interface UserAccountRepository {
     UserAccount update(UserAccount userAccount);
     UserAccount delete(Long id);
     Collection<UserAccount> findAll();
-
+    List<UserAccount> findAllByIsEnabledFalseAndIsDeletedFalse();
+    UserAccount findByEmail(String email);
 
 }

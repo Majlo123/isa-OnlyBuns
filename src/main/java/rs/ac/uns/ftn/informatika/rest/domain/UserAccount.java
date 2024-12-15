@@ -50,6 +50,9 @@ public class UserAccount {
     @Column(name = "last_time_used")
     private Date lastTimeUsed;
 
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
+
     public String getVerificationCode() {
         return verificationCode;
     }
@@ -58,13 +61,7 @@ public class UserAccount {
         this.verificationCode = verificationCode;
     }
 
-    public boolean isEnabled() {
-        return isEnabled;
-    }
 
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
-    }
 
     private String role;
 
@@ -111,7 +108,20 @@ public class UserAccount {
         }
     }
     // Getteri i setteri za sva polja
+    public boolean isEnabled() {
+        return isEnabled;
+    }
 
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
     public Long getId() {
         return id;
     }

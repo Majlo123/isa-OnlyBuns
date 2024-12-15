@@ -29,7 +29,7 @@ public interface InMemoryUserAccountRepository extends JpaRepository<UserAccount
    @Lock(LockModeType.PESSIMISTIC_WRITE)
    @Query("SELECT u FROM UserAccount u WHERE u.id = :id")
    Optional<UserAccount> findByIdWithLock(@Param("id") Long id);
-
+   List<UserAccount> findAllByIsEnabledFalseAndIsDeletedFalse();
    @Query("SELECT u FROM UserAccount u ORDER BY u.followersCount ASC")
    List<UserAccount> findAllSortedByFollowingCount();
 

@@ -34,4 +34,7 @@ public interface UserAccountService {
     List<UserAccount> searchByPostCount(int min, int max);
     List<UserAccount> sortByFollowingCount();
     List<UserAccount> sortByEmail();
+    void markUnverifiedAccountsAsDeleted();
+    UserAccount findByEmail(String email);
+
 }
