@@ -2,8 +2,9 @@ package rs.ac.uns.ftn.informatika.rest.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -49,7 +50,8 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     @Autowired
     private JwtService jwtService;
-
+    @Autowired
+    private EntityManager entityManager;
     @Autowired
     private JavaMailSender mailSender;
     private UserAccountController userAccountController;
@@ -66,40 +68,52 @@ public class UserAccountServiceImpl implements UserAccountService {
         return followRepository.existsByFollowerIdAndFolloweeId(currentUserId, userId);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void followUser(Long currentUserId, Long targetUserId) {
         if (currentUserId.equals(targetUserId)) {
             throw new IllegalArgumentException("Ne možete pratiti sami sebe");
         }
 
-        // Provera rate limita
-        LocalDateTime oneMinuteAgo = LocalDateTime.now().minusMinutes(1);
-        long count = followRepository.countFollowsInLastMinute(currentUserId, oneMinuteAgo);
-        if (count >= FOLLOW_LIMIT_PER_MINUTE) {
-            throw new RuntimeException("Prekoračili ste broj dozvoljenih praćenja po minutu (max 50).");
-        }
-
-        // Provera da li već prati
         if (followRepository.existsByFollowerIdAndFolloweeId(currentUserId, targetUserId)) {
-            // Već prati ovog korisnika, ne radimo ništa
             return;
         }
 
-        // Dohvati korisnika koga pratimo
-        UserAccount userToFollow = userAccountRepository.findById(targetUserId)
+        UserAccount targetUser = userAccountRepository.findByIdWithLock(targetUserId)
                 .orElseThrow(() -> new RuntimeException("Korisnik nije pronađen"));
 
-        // Kreiraj Follow zapis
+        try {
+            Thread.sleep(1000); // Simulacija
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
         Follow follow = new Follow();
         follow.setFollowerId(currentUserId);
         follow.setFolloweeId(targetUserId);
         follow.setFollowedAt(LocalDateTime.now());
         followRepository.save(follow);
 
-        // Uvećaj broj pratilaca
-        userToFollow.setFollowersCount(userToFollow.getFollowersCount() + 1);
-        userAccountRepository.save(userToFollow);
+        targetUser.setFollowersCount(targetUser.getFollowersCount() + 1);
+        userAccountRepository.save(targetUser);
+
+        // Forsiranje sinhronizacije s bazom
+        entityManager.flush();
     }
+    @Scheduled(cron = "0 0 0 L * ?") 
+    public void markUnverifiedAccountsAsDeleted() {
+        List<UserAccount> unverifiedAccounts = userAccountRepository.findAllByIsEnabledFalseAndIsDeletedFalse();
+
+        for (UserAccount account : unverifiedAccounts) {
+            account.setDeleted(true);
+        }
+
+        userAccountRepository.saveAll(unverifiedAccounts);
+
+        System.out.println("Marked " + unverifiedAccounts.size() + " unverified accounts as deleted.");
+    }
+
+
+
 
     @Transactional
     public void unfollowUser(Long currentUserId, Long targetUserId) {
@@ -124,7 +138,8 @@ public class UserAccountServiceImpl implements UserAccountService {
     public Page<UserAccount> findAll(Pageable pageable) {
         return userAccountRepository.findAll(pageable);
     }
-
+    @Override
+    public UserAccount findByEmail(String email) {return userAccountRepository.findByEmail(email);}
     @Override
     public UserAccount findById(Long id) {
         return userAccountRepository.findById(id).orElse(null);

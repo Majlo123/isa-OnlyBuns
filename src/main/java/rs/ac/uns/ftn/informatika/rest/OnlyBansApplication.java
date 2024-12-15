@@ -14,13 +14,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableScheduling
 @EnableTransactionManagement
 public class OnlyBansApplication {
+
 	@Bean
 	public Validator validator() {
 		ValidatorFactory validatorFactory = Validation.byDefaultProvider().configure().buildValidatorFactory();
 		return validatorFactory.getValidator();
 	}
-	public static void main(String[] args) {
-		SpringApplication.run( OnlyBansApplication.class, args);
-	}
 
+	public static void main(String[] args) {
+		SpringApplication.run(OnlyBansApplication.class, args);
+	}
 }
