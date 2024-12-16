@@ -90,7 +90,7 @@ public class PostController {
 
     @PostMapping("/{id}/{userId}/like")
     public ResponseEntity<Void> likePost(@PathVariable Long id, @PathVariable Long userId) {
-        postService.likePost(id, userId);
+        postService.likePost(id);
         UserAccount userLiked = userAccountService.findById(userId);
         Post likedPost = postService.getPostById(id);
         likesService.likePost(likedPost, userLiked);
