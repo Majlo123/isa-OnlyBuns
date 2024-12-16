@@ -276,6 +276,7 @@ public class UserAccountServiceImpl implements UserAccountService {
        return userAcc.map(UserAccount::getEmail).orElse(null);
     }
     @Override
+    @Transactional(readOnly = false)
     public String verify(AuthRequest credentials) {
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword()));
@@ -293,6 +294,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public boolean verifyVerificationCode(String verificationCode) {
         UserAccount user = userAccountRepository.findByVerificationCode(verificationCode);
 

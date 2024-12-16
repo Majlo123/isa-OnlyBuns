@@ -3,6 +3,7 @@ package rs.ac.uns.ftn.informatika.rest.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 import rs.ac.uns.ftn.informatika.rest.domain.UserInfo;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
@@ -22,6 +23,7 @@ public class ChangeUserInfoServiceImpl implements ChangeUserInfoService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public UserAccount changeFirstAndLastName(UserInfo newUserInfo) {
         UserAccount userInfo = userAccountRepository.findByEmail(newUserInfo.email);
         if(userInfo != null) {
@@ -36,6 +38,7 @@ public class ChangeUserInfoServiceImpl implements ChangeUserInfoService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public UserAccount changeAddress(UserInfo newUserInfo) {
         UserAccount userInfo = userAccountRepository.findByEmail(newUserInfo.email);
         if(userInfo != null) {
@@ -50,6 +53,7 @@ public class ChangeUserInfoServiceImpl implements ChangeUserInfoService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public String changePassword(UserAccountDTO newUserPassword) {
         UserAccount currentAcc = userAccountRepository.findByEmail((newUserPassword.getEmail()));
         if(currentAcc != null) {

@@ -43,7 +43,7 @@ public interface InMemoryUserAccountRepository extends JpaRepository<UserAccount
 
    @Query("SELECT u FROM UserAccount u ORDER BY u.email ASC")
    List<UserAccount> findAllSortedByEmail();
-
+   @Transactional(readOnly = false)
    UserAccount findByVerificationCode(String verificationCode);
 
    @Transactional

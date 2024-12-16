@@ -3,6 +3,7 @@ package rs.ac.uns.ftn.informatika.rest.domain;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
+import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
 
 import java.time.temporal.Temporal;
@@ -57,6 +58,7 @@ public class UserAccount {
         return verificationCode;
     }
 
+    @Transactional(readOnly = false)
     public void setVerificationCode(String verificationCode) {
         this.verificationCode = verificationCode;
     }
@@ -112,6 +114,7 @@ public class UserAccount {
         return isEnabled;
     }
 
+    @Transactional(readOnly = false)
     public void setEnabled(boolean enabled) {
         isEnabled = enabled;
     }
