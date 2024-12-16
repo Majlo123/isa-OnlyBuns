@@ -14,6 +14,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.rest.config.Utility;
 import rs.ac.uns.ftn.informatika.rest.domain.AuthRequest;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
@@ -26,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 public class UserAccountServiceImpl implements UserAccountService {
 
     @Autowired
@@ -65,6 +69,7 @@ public class UserAccountServiceImpl implements UserAccountService {
         return null;
     }
     @Override
+    @Transactional(readOnly = false,isolation = Isolation.SERIALIZABLE,propagation = Propagation.REQUIRES_NEW)
     public UserAccount create(UserAccountDTO accountDTO, HttpServletRequest request) throws Exception {
 
             if (userAccountRepository.findByEmail(accountDTO.getEmail()) != null) {

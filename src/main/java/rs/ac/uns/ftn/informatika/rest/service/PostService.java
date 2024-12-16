@@ -54,7 +54,7 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public void likePost(Long postId) {
+    public void likePost(Long postId, Long userId) {
         Post post = getPostById(postId);
         post.setLikes(post.getLikes() + 1);
         postRepository.save(post);

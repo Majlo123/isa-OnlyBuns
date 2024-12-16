@@ -6,4 +6,5 @@ public class UserInfo {
     public Address address;
     public  String firstName;
     public  String lastName;
+    public int followersCount;
 }

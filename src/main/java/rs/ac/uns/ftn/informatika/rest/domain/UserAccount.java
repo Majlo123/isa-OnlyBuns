@@ -87,7 +87,7 @@ public class UserAccount {
         this.followersCount = followersCount;
         this.postCount = postCount;
         }
-    private String convertAddressToJson(Address address) {
+    public String convertAddressToJson(Address address) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.writeValueAsString(address);

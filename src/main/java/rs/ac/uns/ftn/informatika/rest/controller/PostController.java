@@ -6,9 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.informatika.rest.domain.Post;
 import rs.ac.uns.ftn.informatika.rest.domain.Comment;
+import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 import rs.ac.uns.ftn.informatika.rest.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.rest.dto.CommentDTO;
+import rs.ac.uns.ftn.informatika.rest.service.LikesService;
 import rs.ac.uns.ftn.informatika.rest.service.PostService;
+import rs.ac.uns.ftn.informatika.rest.service.UserAccountService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,6 +27,12 @@ public class PostController {
 
     @Autowired
     private PostService postService;
+
+    @Autowired
+    private LikesService likesService;
+
+    @Autowired
+    private UserAccountService userAccountService;
 
     @GetMapping
     public List<Post> getAllPosts() {
@@ -79,9 +88,12 @@ public class PostController {
         return ResponseEntity.ok(postService.updatePost(id, postDTO));
     }
 
-    @PostMapping("/{id}/like")
-    public ResponseEntity<Void> likePost(@PathVariable Long id) {
-        postService.likePost(id);
+    @PostMapping("/{id}/{userId}/like")
+    public ResponseEntity<Void> likePost(@PathVariable Long id, @PathVariable Long userId) {
+        postService.likePost(id, userId);
+        UserAccount userLiked = userAccountService.findById(userId);
+        Post likedPost = postService.getPostById(id);
+        likesService.likePost(likedPost, userLiked);
         return ResponseEntity.noContent().build();
     }
 
