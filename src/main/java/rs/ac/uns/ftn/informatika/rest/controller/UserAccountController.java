@@ -74,33 +74,14 @@ public class UserAccountController {
     public ResponseEntity<String> login(@RequestBody AuthRequest credentials) {
         System.out.println(credentials);
 
-        UserAccount userAccount = userAccountService.findByEmail(credentials.getUsername());
-
-        // Proveri da li nalog postoji
-        if (userAccount == null) {
-            return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
-        }
-
-        // Proveri da li je nalog obrisan
-        if (userAccount.isDeleted()) {
-            userAccountService.delete(userAccount.getId());
-            return new ResponseEntity<>("Sorry your account has been deleted. Register again", HttpStatus.UNAUTHORIZED);
-        }
-
-        // Proveri da li je nalog verifikovan
-        if (!userAccount.isEnabled()) {
-            return new ResponseEntity<>("Email not verified", HttpStatus.UNAUTHORIZED);
-        }
-
-        // Verifikacija kredencijala i generisanje tokena
         String token = userAccountService.verify(credentials);
+        System.out.println(token);
 
-        if (token.equals("Failure")) {
-            return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
+        if(token.equals("Failure")){
+            return new ResponseEntity<String>("Email not verified",HttpStatus.UNAUTHORIZED);
+        }else{
+            return new ResponseEntity<String>(token, HttpStatus.OK);
         }
-
-        // Ako je sve u redu, vraćamo token
-        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
     @GetMapping(path = "/getUserInfo")

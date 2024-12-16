@@ -142,8 +142,8 @@ public class UserAccountServiceImpl implements UserAccountService {
     public Page<UserAccount> findAll(Pageable pageable) {
         return userAccountRepository.findAll(pageable);
     }
-    @Override
-    public UserAccount findByEmail(String email) {return userAccountRepository.findByEmail(email);}
+    //@Override
+    //public UserAccount findByEmail(String email) {return userAccountRepository.findByEmail(email);}
     @Override
     public UserAccount findById(Long id) {
         return userAccountRepository.findById(id).orElse(null);
