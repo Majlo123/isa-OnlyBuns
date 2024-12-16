@@ -5,7 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.QueryHint;
+import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 
 import java.util.Collection;
@@ -18,7 +23,10 @@ import java.util.concurrent.atomic.AtomicLong;
 @Repository
 public interface InMemoryUserAccountRepository extends JpaRepository<UserAccount, Long> {
 
-   UserAccount findByEmail(String email);
+
+   @Lock(LockModeType.PESSIMISTIC_WRITE)
+   @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value ="0")})
+   UserAccount findByEmail(@Param("email")String email);
    List<UserAccount> findByFirstNameContaining(String firstName);
 
    List<UserAccount> findByLastNameContaining(String lastName);
@@ -37,6 +45,11 @@ public interface InMemoryUserAccountRepository extends JpaRepository<UserAccount
    List<UserAccount> findAllSortedByEmail();
 
    UserAccount findByVerificationCode(String verificationCode);
+
+   @Transactional
+   @Modifying
+   @Query(value = "LOCK TABLE user_account IN EXCLUSIVE MODE", nativeQuery = true)
+   void lockTable();
     /*private static AtomicLong counter = new AtomicLong();
     private final ConcurrentMap<Long, UserAccount> userAccounts = new ConcurrentHashMap<>();
 

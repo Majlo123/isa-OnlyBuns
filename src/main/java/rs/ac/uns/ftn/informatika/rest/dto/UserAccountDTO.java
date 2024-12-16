@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import rs.ac.uns.ftn.informatika.rest.domain.Address;
+import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 
 import java.util.Date;
 
@@ -95,4 +96,5 @@ public class UserAccountDTO {
     public Date getLastTimeUsed() { return lastTimeUsed; }
 
     public void setLastTimeUsed(Date lastTimeUsed) { this.lastTimeUsed = lastTimeUsed; }
+
 }

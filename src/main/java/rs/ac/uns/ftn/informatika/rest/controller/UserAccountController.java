@@ -116,6 +116,7 @@ public class UserAccountController {
             userInfo.email = email;
             userInfo.firstName = acc.get(0).getFirstName();
             userInfo.lastName = acc.get(0).getLastName();
+            userInfo.followersCount = acc.get(0).getFollowersCount();
             return new ResponseEntity<>(userInfo, HttpStatus.OK);
         }
     }
@@ -206,6 +207,7 @@ public class UserAccountController {
         }
         return new ResponseEntity<>(username, HttpStatus.OK);
     }
+    
     @Operation(description = "Search users by last name", method = "GET")
     @GetMapping(value = "/search/lastName", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<UserAccount>> searchByLastName(@RequestParam("lastName") String lastName) {
