@@ -139,6 +139,7 @@ public class UserAccountServiceImpl implements UserAccountService {
         userAccountRepository.save(userToUnfollow);
     }
     @Override
+    @Transactional(readOnly = false)
     public Page<UserAccount> findAll(Pageable pageable) {
         return userAccountRepository.findAll(pageable);
     }
@@ -180,7 +181,11 @@ public class UserAccountServiceImpl implements UserAccountService {
     public Collection<UserAccount> findAll() {
         return userAccountRepository.findAll();
     }
-
+    @Override
+    @Transactional(readOnly = false)
+    public  List<UserAccount> findAllAccounts(){
+        return userAccountRepository.findAll();
+    }
 
 
     @Override

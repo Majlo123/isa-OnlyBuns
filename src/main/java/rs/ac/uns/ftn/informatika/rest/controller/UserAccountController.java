@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,7 @@ import rs.ac.uns.ftn.informatika.rest.domain.UserInfo;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
 import rs.ac.uns.ftn.informatika.rest.service.UserAccountService;
 
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -45,6 +47,12 @@ public class UserAccountController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         Page<UserAccount> userAccounts = userAccountService.findAll(PageRequest.of(page, size));
+        return new ResponseEntity<>(userAccounts, HttpStatus.OK);
+    }
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE,path = "/getAllUsers")
+    public ResponseEntity<List<UserAccount>> getAllUsers(){
+
+        List<UserAccount> userAccounts = userAccountService.findAllAccounts();
         return new ResponseEntity<>(userAccounts, HttpStatus.OK);
     }
 
