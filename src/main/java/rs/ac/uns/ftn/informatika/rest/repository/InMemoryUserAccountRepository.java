@@ -32,7 +32,17 @@ public interface InMemoryUserAccountRepository extends JpaRepository<UserAccount
    List<UserAccount> findByLastNameContaining(String lastName);
 
    List<UserAccount> findByEmailContaining(String email);
+   // Broji ukupan broj korisnika
+   @Query("SELECT COUNT(u) FROM UserAccount u")
+   long count();
 
+   // Broji korisnike koji su kreirali bar jednu objavu
+   @Query("SELECT COUNT(DISTINCT u.id) FROM UserAccount u JOIN Post p ON u.id = p.userId")
+   long countUsersWithPosts();
+
+   // Broji korisnike koji su kreirali bar jedan komentar
+   @Query("SELECT COUNT(DISTINCT u.id) FROM UserAccount u JOIN Comment c ON u.id = c.userId")
+   long countUsersWithComments();
    List<UserAccount> findByPostCountBetween(int minPosts, int maxPosts);
    @Lock(LockModeType.PESSIMISTIC_WRITE)
    @Query("SELECT u FROM UserAccount u WHERE u.id = :id")

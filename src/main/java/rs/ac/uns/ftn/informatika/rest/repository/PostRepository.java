@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import rs.ac.uns.ftn.informatika.rest.domain.Post;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +24,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM Post p WHERE p.id = :postId")
     Optional<Post> findByIdWithLock(@Param("postId") Long postId);
-
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.dateOfCreation BETWEEN :startDate AND :endDate")
+    long countPostsBetween(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
     @Query("SELECT COUNT(c) FROM Comment c WHERE c.userId = :userId AND c.createdAt >= :oneHourAgo")
     int countCommentsInLastHour(@Param("userId") Long userId, @Param("oneHourAgo") LocalDateTime oneHourAgo);
 }
