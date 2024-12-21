@@ -60,7 +60,7 @@ public class SecurityConfig {
 
                        // "/api/userAccount/*/follow/**",
                         "/api/userAccount/*/follows/**",
-                        "/api/userAccount/*/unfollow/**",
+                       // "/api/userAccount/*/unfollow/**",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
                         "/api/userAccount/verify",
