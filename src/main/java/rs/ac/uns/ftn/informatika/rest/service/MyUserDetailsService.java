@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 import rs.ac.uns.ftn.informatika.rest.domain.UserPrincipal;
 import rs.ac.uns.ftn.informatika.rest.repository.InMemoryUserAccountRepository;
@@ -15,6 +16,7 @@ public class MyUserDetailsService implements UserDetailsService {
     @Autowired
     private InMemoryUserAccountRepository repository;
     @Override
+    @Transactional(readOnly = false)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         System.out.println("EMAILLLLL:"+email);
         UserAccount user = repository.findByEmail(email);
