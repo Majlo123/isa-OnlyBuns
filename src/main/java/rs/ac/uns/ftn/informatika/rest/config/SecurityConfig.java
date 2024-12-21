@@ -48,15 +48,17 @@ public class SecurityConfig {
         http.csrf(customizer -> customizer.disable());
         http.cors(Customizer.withDefaults());
         http.authorizeHttpRequests(request -> request
-                .requestMatchers("/api/userAccount/register", "/api/userAccount/getAllUsers","/api/userAccount/login","api/posts",
-                        "/api/userAccount/getUserInfo", "/api/posts/user/**", "/api/posts/**", "/api/userAccount/*/username",
+                .requestMatchers("/api/userAccount","/api/userAccount/register","/api/userAccount/getAllUsers", "/api/userAccount/getAllUsers","/api/userAccount/login","api/posts",
+                         "/api/posts/user/**",
+                        //"/api/posts/**",
+                        "/api/userAccount/*/username",
                         "/api/userAccount/*/email",
-                        "/api/changeUserInfo",
-                          "/api/changeUserInfo/address",
-                        "/api/changeUserInfo/password",
+                      //  "/api/changeUserInfo",
+                        //  "/api/changeUserInfo/address",
+                        //"/api/changeUserInfo/password",
                         "/api/likes",
 
-                        "/api/userAccount/*/follow/**",
+                       // "/api/userAccount/*/follow/**",
                         "/api/userAccount/*/follows/**",
                         "/api/userAccount/*/unfollow/**",
                         "/swagger-ui/**",

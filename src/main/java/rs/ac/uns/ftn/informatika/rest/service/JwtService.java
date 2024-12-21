@@ -2,10 +2,12 @@ package rs.ac.uns.ftn.informatika.rest.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -45,6 +47,7 @@ public class JwtService {
     }
     private Key getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        System.out.println("Secret Key: " + secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -65,9 +68,10 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
+    @Transactional(readOnly = false)
     public boolean validateToken(String token, UserDetails userDetails) {
         final String userName = extractUserName(token);
+        System.out.println("Token expired: " + isTokenExpired(token));
         return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
