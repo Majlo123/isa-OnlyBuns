@@ -9,16 +9,15 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yaml"
     ports:
       - 9090:9090
-  #      links:
-  #        - node-exporter:node-exporter
-
 
   node-exporter:
     image: prom/node-exporter:latest
-    container_name: monitoring_node_exporter
+    container_name: node_exporter
     restart: unless-stopped
-    expose:
-       - 9100
+    ports:
+      - 9100:9100
+    depends_on:
+        - prometheus
 
   grafana:
     image: grafana/grafana-oss:8.5.2
