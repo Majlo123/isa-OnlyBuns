@@ -1,5 +1,7 @@
 package rs.ac.uns.ftn.informatika.rest.controller;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,7 @@ public class PostController {
     @Autowired
     private UserAccountService userAccountService;
 
+
     @GetMapping
     public List<Post> getAllPosts() {
         return postService.getAllPosts();
@@ -51,6 +54,7 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<Post> createPost(@RequestBody PostDTO postDTO) {
+
         if (postDTO.getImageBase64() != null && !postDTO.getImageBase64().isEmpty()) {
             try {
                 // Decode Base64
@@ -75,6 +79,7 @@ public class PostController {
                 return ResponseEntity.status(500).build();
             }
         }
+
         return ResponseEntity.ok(postService.createPost(postDTO));
     }
 

@@ -65,7 +65,8 @@ public class SecurityConfig {
                         "/v3/api-docs/**",
                         "/api/userAccount/verify",
                         "/swagger-ui.html",
-                        "/actuator/prometheus").permitAll().anyRequest().authenticated());
+                        "/actuator/prometheus",
+                        "/metrics").permitAll().anyRequest().authenticated());
         http.httpBasic(Customizer.withDefaults());
         http.sessionManagement(sess -> sess
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
