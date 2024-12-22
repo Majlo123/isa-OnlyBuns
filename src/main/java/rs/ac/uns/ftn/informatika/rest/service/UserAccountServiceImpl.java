@@ -320,7 +320,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     public List<UserAccount> searchByLastName(String lastName) {
         return userAccountRepository.findByLastNameContaining(lastName);
     }
-
+    @Transactional(readOnly = false)
     public List<UserAccount> searchByEmail(String email) {
         return userAccountRepository.findByEmailContaining(email);
     }

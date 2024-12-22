@@ -25,7 +25,7 @@ public interface InMemoryUserAccountRepository extends JpaRepository<UserAccount
 
 
    @Lock(LockModeType.PESSIMISTIC_WRITE)
-   @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value ="0")})
+   @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value ="-1")})
    UserAccount findByEmail(@Param("email")String email);
    List<UserAccount> findByFirstNameContaining(String firstName);
 

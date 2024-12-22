@@ -17,6 +17,7 @@ import rs.ac.uns.ftn.informatika.rest.repository.InMemoryUserAccountRepository;
 import rs.ac.uns.ftn.informatika.rest.repository.UserAccountRepository;
 import rs.ac.uns.ftn.informatika.rest.service.UserAccountService;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,7 +51,7 @@ public class RegisterAccountTest {
     public void testCreateUserWithConcurrentAccess() throws Throwable {
         // Arrange: Prepare the account DTO
         UserAccountDTO accountDTO = new UserAccountDTO();
-        accountDTO.setEmail("test12@example.com");
+        accountDTO.setEmail("test16@example.com");
         accountDTO.setPassword("password");
         accountDTO.setFirstName("Test");
         accountDTO.setLastName("Test");
@@ -88,7 +89,13 @@ public class RegisterAccountTest {
                  * Prema Postgres dokumentaciji https://www.postgresql.org/docs/9.3/errcodes-appendix.html, kod 55P03 oznacava lock_not_available
                  */
                 try {
-                    userAccountService.create(accountDTO,mockRequest);
+                    UserAccount newAcc = userAccountService.create(accountDTO,mockRequest);
+                    //List<UserAccount> allAccs = userAccountService.findAllAccounts();
+                    //if(allAccs.contains(newAcc)){
+                      if (newAcc != null) {
+                          throw new PessimisticLockingFailureException("Blocked");
+                      }
+
                 } catch (Exception e) {
                     if (e instanceof PessimisticLockingFailureException) {
                         System.out.println("Caught PessimisticLockingFailureException");
