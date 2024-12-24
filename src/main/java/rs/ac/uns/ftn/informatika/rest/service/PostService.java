@@ -1,6 +1,7 @@
 package rs.ac.uns.ftn.informatika.rest.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,13 +11,13 @@ import rs.ac.uns.ftn.informatika.rest.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.rest.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.rest.repository.CommentRepository;
 import rs.ac.uns.ftn.informatika.rest.repository.PostRepository;
-import rs.ac.uns.ftn.informatika.rest.repository.FollowRepository; // Dodato
+import rs.ac.uns.ftn.informatika.rest.repository.FollowRepository;
 import rs.ac.uns.ftn.informatika.rest.exception.ResourceNotFoundException;
-import org.springframework.transaction.annotation.Isolation;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PostService {
@@ -28,7 +29,12 @@ public class PostService {
     private CommentRepository commentRepository;
 
     @Autowired
-    private FollowRepository followRepository; // Dodato
+    private FollowRepository followRepository;
+
+    @Autowired
+    private  UserAccountService userAccountService;
+
+    private final RabbitTemplate rabbitTemplate = new RabbitTemplate();
 
     public List<Post> getAllPosts() {
         return postRepository.findAllPostsWithSortedComments();
@@ -100,5 +106,16 @@ public class PostService {
         post.getComments().add(comment);
         postRepository.save(post);
         return comment;
+    }
+
+    public void markPostAsAdvertisable(Long postId) {
+        Post post = getPostById(postId);
+
+        Map<String, Object> postData = new HashMap<>();
+        postData.put("description", post.getDescription());
+        postData.put("publishedTime", post.getDateOfCreation().toString());
+        postData.put("username", userAccountService.getUsernameById(post.getUserId()));
+
+        rabbitTemplate.convertAndSend("advertisementFanout", "", postData);
     }
 }

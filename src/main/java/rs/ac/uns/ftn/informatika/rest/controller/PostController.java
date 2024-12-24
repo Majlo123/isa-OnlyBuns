@@ -141,4 +141,11 @@ public class PostController {
         }
 
     }
+
+    @PostMapping("/{postId}/advertisable")
+    public ResponseEntity<Void> markPostAsAdvertisable(@PathVariable Long postId) {
+
+        postService.markPostAsAdvertisable(postId);
+        return ResponseEntity.ok().build();
+    }
 }
