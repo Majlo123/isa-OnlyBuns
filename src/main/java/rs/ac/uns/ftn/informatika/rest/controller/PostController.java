@@ -14,6 +14,7 @@ import rs.ac.uns.ftn.informatika.rest.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.rest.service.LikesService;
 import rs.ac.uns.ftn.informatika.rest.service.PostService;
 import rs.ac.uns.ftn.informatika.rest.service.UserAccountService;
+import rs.ac.uns.ftn.informatika.rest.utils.RateLimiter;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,6 +37,7 @@ public class PostController {
     @Autowired
     private UserAccountService userAccountService;
 
+    private final RateLimiter rateLimiter = new RateLimiter();
 
     @GetMapping
     public List<Post> getAllPosts() {
@@ -111,6 +113,7 @@ public class PostController {
         try {
             if(commentDTO.getUserId() != 0){
                 postService.addComment(id, commentDTO);
+                
                 return ResponseEntity.ok().build();
             }else{
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

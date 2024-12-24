@@ -32,6 +32,7 @@ import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 import rs.ac.uns.ftn.informatika.rest.domain.UserInfo;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
 import rs.ac.uns.ftn.informatika.rest.service.UserAccountService;
+import rs.ac.uns.ftn.informatika.rest.utils.RateLimiter;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,8 +40,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/userAccount") // Tačna ruta
 public class UserAccountController {
+
     @Autowired
     private UserAccountService userAccountService;
+
+    private final RateLimiter rateLimiter = new RateLimiter();
+
     @Operation(description = "Get all users with pagination", method = "GET")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<UserAccount>> getAllUsers(
@@ -49,6 +54,7 @@ public class UserAccountController {
         Page<UserAccount> userAccounts = userAccountService.findAll(PageRequest.of(page, size));
         return new ResponseEntity<>(userAccounts, HttpStatus.OK);
     }
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE,path = "/getAllUsers")
     public ResponseEntity<List<UserAccount>> getAllUsers(){
 
@@ -78,7 +84,7 @@ public class UserAccountController {
     }
 
     @PostMapping(path = "/login")
-    public ResponseEntity<String> login(@RequestBody AuthRequest credentials) {
+    public ResponseEntity<String> login(@RequestBody AuthRequest credentials, HttpServletRequest request) {
         System.out.println(credentials);
 
         String token = userAccountService.verify(credentials);
@@ -87,6 +93,13 @@ public class UserAccountController {
         if(token.equals("Failure")){
             return new ResponseEntity<String>("Email not verified",HttpStatus.UNAUTHORIZED);
         }else{
+
+            request.getSession().setAttribute("email", credentials.getUsername());
+
+            // Call RateLimiter to check if requests are within limits
+            if (!rateLimiter.isRequestAllowed(credentials.getUsername())) {
+                return new ResponseEntity<>("Too many requests. Please try again later.", HttpStatus.TOO_MANY_REQUESTS);
+            }
             return new ResponseEntity<String>(token, HttpStatus.OK);
         }
     }
