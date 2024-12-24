@@ -2,6 +2,7 @@ package rs.ac.uns.ftn.informatika.rest.controller;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -109,10 +110,18 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
     @PostMapping("/{id}/comments")
-    public ResponseEntity<String> addComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
+    public ResponseEntity<String> addComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO, HttpServletRequest request) {
         try {
             if(commentDTO.getUserId() != 0){
+                String identifier = request.getSession().getAttribute("email") != null
+                        ? (String) request.getSession().getAttribute("email")
+                        : request.getRemoteAddr(); // Use IP if no email
+
+                if (!rateLimiter.isRequestAllowed(identifier)) {
+                    return new ResponseEntity<>("Too many requests. Please try again later.", HttpStatus.TOO_MANY_REQUESTS);
+                }
                 postService.addComment(id, commentDTO);
+
 
                 return ResponseEntity.ok().build();
             }else{
