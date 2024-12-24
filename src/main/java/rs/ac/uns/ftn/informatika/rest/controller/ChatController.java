@@ -27,6 +27,16 @@ public class ChatController {
         return chatService.createChat(chat);
     }
 
+    @PostMapping("/{chatId}/addUser")
+    public Chat addUserToGroup(@PathVariable Long chatId, @RequestParam Long userId) {
+        return chatService.addUserToGroup(chatId, userId);
+    }
+
+    @DeleteMapping("/{chatId}/removeUser")
+    public Chat removeUserFromGroup(@PathVariable Long chatId, @RequestParam Long userId) {
+        return chatService.removeUserFromGroup(chatId, userId);
+    }
+
     @GetMapping("/{chatId}/messages")
     public List<Message> getMessagesByChatId(@PathVariable Long chatId) {
         return chatService.getMessagesByChatId(chatId);

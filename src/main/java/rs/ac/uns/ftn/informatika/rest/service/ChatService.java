@@ -26,6 +26,18 @@ public class ChatService {
         return chatRepository.save(chat);
     }
 
+    public Chat addUserToGroup(Long chatId, Long userId) {
+        Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new RuntimeException("Chat not found"));
+        chat.getParticipants().add(userId);
+        return chatRepository.save(chat);
+    }
+
+    public Chat removeUserFromGroup(Long chatId, Long userId) {
+        Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new RuntimeException("Chat not found"));
+        chat.getParticipants().remove(userId);
+        return chatRepository.save(chat);
+    }
+
     public List<Message> getMessagesByChatId(Long chatId) {
         return messageRepository.findByChatIdOrderByTimestampAsc(chatId);
     }
@@ -34,3 +46,4 @@ public class ChatService {
         return messageRepository.save(message);
     }
 }
+
