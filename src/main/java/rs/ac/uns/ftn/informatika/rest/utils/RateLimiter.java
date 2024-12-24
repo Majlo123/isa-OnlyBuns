@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class RateLimiter {
     private final Map<String, UserRequestInfo> userRequests = new HashMap<>();
-    private final int MAX_REQUESTS = 3;
+    private final int MAX_REQUESTS = 5;
     private final long TIME_FRAME = 60 * 1000; // 1 minute in milliseconds
 
     public RateLimiter() {}

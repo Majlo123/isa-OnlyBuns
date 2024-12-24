@@ -56,7 +56,15 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody PostDTO postDTO) {
+    public ResponseEntity<String> createPost(@RequestBody PostDTO postDTO, HttpServletRequest request) {
+
+        String identifier = request.getSession().getAttribute("email") != null
+                ? (String) request.getSession().getAttribute("email")
+                : request.getRemoteAddr(); // Use IP if no email
+
+        if (!rateLimiter.isRequestAllowed(identifier)) {
+            return new ResponseEntity<>("Too many requests. Please try again later.", HttpStatus.TOO_MANY_REQUESTS);
+        }
 
         if (postDTO.getImageBase64() != null && !postDTO.getImageBase64().isEmpty()) {
             try {
@@ -82,8 +90,8 @@ public class PostController {
                 return ResponseEntity.status(500).build();
             }
         }
-
-        return ResponseEntity.ok(postService.createPost(postDTO));
+        postService.createPost(postDTO);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
