@@ -7,6 +7,7 @@ import rs.ac.uns.ftn.informatika.rest.repository.CommentRepository;
 import rs.ac.uns.ftn.informatika.rest.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.rest.repository.InMemoryUserAccountRepository;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Service
@@ -19,17 +20,39 @@ public class AnalyticsService {
     private CommentRepository commentRepository;
 
     @Autowired
-    private InMemoryUserAccountRepository InMemoryUserAccountRepository;
+    private InMemoryUserAccountRepository userAccountRepository;
 
-    public AnalyticsResponse getAnalytics(Date startDate, Date endDate) {
-        long postCount = postRepository.countPostsBetween(startDate, endDate);
-        long commentCount = commentRepository.countCommentsBetween(startDate, endDate);
+    public AnalyticsResponse getAnalytics(LocalDate startDate, LocalDate endDate) {
+        // Ukupan broj korisnika
+        long totalUsers = userAccountRepository.count();
 
-        long totalUsers = InMemoryUserAccountRepository.count();
-        long usersWithPosts = InMemoryUserAccountRepository.countUsersWithPosts();
-        long usersWithComments = InMemoryUserAccountRepository.countUsersWithComments();
-        long inactiveUsers = totalUsers - (usersWithPosts + usersWithComments);
+        // Korisnici koji su objavljivali
+        long usersWithPosts = userAccountRepository.countUsersWithPosts();
 
-        return new AnalyticsResponse(postCount, commentCount, totalUsers, usersWithPosts, usersWithComments, inactiveUsers);
+        // Korisnici koji su komentarisali
+        long usersWithComments = userAccountRepository.countUsersWithComments();
+
+        // **Jedinstveni aktivni korisnici** (objavljivali ili komentarisali)
+        long uniqueActiveUsers = userAccountRepository.countUniqueUsersWithPostsOrComments();
+
+        // **Neaktivni korisnici** (oni koji nisu ni objavili ni komentarisali)
+        long inactiveUsers = totalUsers - uniqueActiveUsers;
+
+        // Procenti
+        double postingPercentage = ((double) usersWithPosts / totalUsers) * 100;
+        double commentingPercentage = ((double) usersWithComments / totalUsers) * 100;
+        double inactivePercentage = ((double) inactiveUsers / totalUsers) * 100;
+
+        // Povratni odgovor
+        return new AnalyticsResponse(
+                postRepository.countPostsBetween(startDate.atStartOfDay(), endDate.atTime(23, 59, 59)),
+                commentRepository.countCommentsBetween(startDate.atStartOfDay(), endDate.atTime(23, 59, 59)),
+                totalUsers,
+                usersWithPosts,
+                usersWithComments,
+                postingPercentage,
+                commentingPercentage,
+                inactivePercentage
+        );
     }
 }

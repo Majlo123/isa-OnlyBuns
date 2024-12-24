@@ -1,21 +1,36 @@
 package rs.ac.uns.ftn.informatika.rest.dto;
 
 public class AnalyticsResponse {
-    private long postCount;
-    private long commentCount;
-    private long totalUsers;
-    private long usersWithPosts;
-    private long usersWithComments;
-    private long inactiveUsers;
 
+    private long postCount; // Broj objava
+    private long commentCount; // Broj komentara
+    private long totalUsers; // Ukupan broj korisnika
+    private long usersWithPosts; // Korisnici sa objavama
+    private long usersWithComments; // Korisnici sa komentarima
+
+    // Procenti
+    private double postingPercentage; // Procenat korisnika sa objavama
+    private double commentingPercentage; // Procenat korisnika sa komentarima
+    private double inactivePercentage;
     // Konstruktor
-    public AnalyticsResponse(long postCount, long commentCount, long totalUsers, long usersWithPosts, long usersWithComments, long inactiveUsers) {
+    public AnalyticsResponse(
+            long postCount,
+            long commentCount,
+            long totalUsers,
+            long usersWithPosts,
+            long usersWithComments,
+            double postingPercentage,
+            double commentingPercentage,
+            double inactivePercentage
+    ) {
         this.postCount = postCount;
         this.commentCount = commentCount;
         this.totalUsers = totalUsers;
         this.usersWithPosts = usersWithPosts;
         this.usersWithComments = usersWithComments;
-        this.inactiveUsers = inactiveUsers;
+        this.postingPercentage = postingPercentage;
+        this.commentingPercentage = commentingPercentage;
+        this.inactivePercentage = inactivePercentage;
     }
 
     // Getteri
@@ -30,7 +45,7 @@ public class AnalyticsResponse {
     public long getTotalUsers() {
         return totalUsers;
     }
-
+    public double getInactivePercentage() { return inactivePercentage; }
     public long getUsersWithPosts() {
         return usersWithPosts;
     }
@@ -39,8 +54,12 @@ public class AnalyticsResponse {
         return usersWithComments;
     }
 
-    public long getInactiveUsers() {
-        return inactiveUsers;
+    public double getPostingPercentage() {
+        return postingPercentage;
+    }
+
+    public double getCommentingPercentage() {
+        return commentingPercentage;
     }
 
     // Setteri
@@ -64,9 +83,11 @@ public class AnalyticsResponse {
         this.usersWithComments = usersWithComments;
     }
 
-    public void setInactiveUsers(long inactiveUsers) {
-        this.inactiveUsers = inactiveUsers;
+    public void setPostingPercentage(double postingPercentage) {
+        this.postingPercentage = postingPercentage;
+    }
+
+    public void setCommentingPercentage(double commentingPercentage) {
+        this.commentingPercentage = commentingPercentage;
     }
 }
-
-

@@ -25,7 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p WHERE p.id = :postId")
     Optional<Post> findByIdWithLock(@Param("postId") Long postId);
     @Query("SELECT COUNT(p) FROM Post p WHERE p.dateOfCreation BETWEEN :startDate AND :endDate")
-    long countPostsBetween(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+    long countPostsBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     @Query("SELECT COUNT(c) FROM Comment c WHERE c.userId = :userId AND c.createdAt >= :oneHourAgo")
     int countCommentsInLastHour(@Param("userId") Long userId, @Param("oneHourAgo") LocalDateTime oneHourAgo);
 }
