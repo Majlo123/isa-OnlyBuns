@@ -2,6 +2,7 @@ package rs.ac.uns.ftn.informatika.rest.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import rs.ac.uns.ftn.informatika.rest.domain.Follow;
 
 import java.time.LocalDateTime;
@@ -16,4 +17,7 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     @Query("SELECT f.followeeId FROM Follow f WHERE f.followerId = :followerId")
     List<Long> findFolloweeIdsByFollowerId(Long followerId);
     void deleteByFollowerIdAndFolloweeId(Long followerId, Long followeeId);
+    @Query("SELECT f FROM Follow f where f.followeeId = :userId")
+    List<Follow> findFolloweeById(@Param("userId") Long userId);
+
 }

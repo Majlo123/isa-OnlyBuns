@@ -113,7 +113,7 @@ public class PostController {
         try {
             if(commentDTO.getUserId() != 0){
                 postService.addComment(id, commentDTO);
-                
+
                 return ResponseEntity.ok().build();
             }else{
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
