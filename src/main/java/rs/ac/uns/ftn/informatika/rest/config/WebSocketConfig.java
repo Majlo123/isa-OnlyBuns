@@ -1,4 +1,4 @@
-package rs.ac.uns.ftn.informatika.rest.config;
+/*package rs.ac.uns.ftn.informatika.rest.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -21,3 +21,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS(); // Endpoint za WebSocket konekcije
     }
 }
+ */

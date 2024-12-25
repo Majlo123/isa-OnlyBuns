@@ -1,8 +1,6 @@
 package rs.ac.uns.ftn.informatika.rest.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.informatika.rest.domain.Chat;
 import rs.ac.uns.ftn.informatika.rest.domain.Message;
@@ -37,14 +35,16 @@ public class ChatController {
         return chatService.removeUserFromGroup(chatId, userId);
     }
 
-    @GetMapping("/{chatId}/messages")
-    public List<Message> getMessagesByChatId(@PathVariable Long chatId) {
-        return chatService.getMessagesByChatId(chatId);
+
+    @GetMapping("/{chatId}/messages/paged")
+    public List<Message> getMessagesPaged(
+            @PathVariable Long chatId,
+            @RequestParam int page,
+            @RequestParam int size
+    ) {
+        return chatService.getMessagesPaged(chatId, page, size);
     }
 
-    @MessageMapping("/chat.sendMessage")
-    @SendTo("/topic/public")
-    public Message sendMessage(Message message) {
-        return chatService.saveMessage(message);
-    }
+
+
 }

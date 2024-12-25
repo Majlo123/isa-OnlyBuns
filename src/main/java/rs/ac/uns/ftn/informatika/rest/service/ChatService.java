@@ -1,12 +1,17 @@
 package rs.ac.uns.ftn.informatika.rest.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import rs.ac.uns.ftn.informatika.rest.domain.Chat;
 import rs.ac.uns.ftn.informatika.rest.domain.Message;
 import rs.ac.uns.ftn.informatika.rest.repository.ChatRepository;
 import rs.ac.uns.ftn.informatika.rest.repository.MessageRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -38,12 +43,28 @@ public class ChatService {
         return chatRepository.save(chat);
     }
 
-    public List<Message> getMessagesByChatId(Long chatId) {
-        return messageRepository.findByChatIdOrderByTimestampAsc(chatId);
+    // U ChatService:
+    public List<Message> getMessagesPaged(Long chatId, int page, int size) {
+        // Možeš koristiti PageRequest i naručiti poruke po datumu opadajuće ili rastuće.
+        // Na primer, najnovije prve:
+        Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
+
+        // Pretpostavimo da si u repositorijumu definisao:
+        // Page<Message> findByChatId(Long chatId, Pageable pageable);
+        Page<Message> pageResult = messageRepository.findByChatId(chatId, pageable);
+
+        // Vrati listu
+        return pageResult.getContent();
     }
 
+
     public Message saveMessage(Message message) {
+        message.setTimestamp(LocalDateTime.now());
         return messageRepository.save(message);
+    }
+    public List<Message> getLatestMessagesByChatId(Long chatId) {
+        List<Message> descMessages = messageRepository.findTop10ByChatIdOrderByTimestampDesc(chatId);
+        return descMessages;
     }
 }
 
