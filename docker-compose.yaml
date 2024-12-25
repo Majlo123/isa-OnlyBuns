@@ -38,3 +38,11 @@ services:
       # Enabled for logging
       - GF_LOG_MODE=console file
       - GF_LOG_FILTERS=alerting.notifier.slack:debug alertmanager:debug ngalert:debug
+
+  rabbitMQ:
+    image: rabbitmq:3-management
+    container_name: rabbitMQ
+    restart: unless-stopped
+    ports:
+      - 5672:5672
+      - 15672:15672

@@ -26,15 +26,13 @@ public class PostService {
     private PostRepository postRepository;
 
     @Autowired
-    private CommentRepository commentRepository;
-
-    @Autowired
     private FollowRepository followRepository;
 
     @Autowired
-    private  UserAccountService userAccountService;
+    private UserAccountService userAccountService;
 
-    private final RabbitTemplate rabbitTemplate = new RabbitTemplate();
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     public List<Post> getAllPosts() {
         return postRepository.findAllPostsWithSortedComments();
@@ -111,7 +109,7 @@ public class PostService {
     public void markPostAsAdvertisable(Long postId) {
         Post post = getPostById(postId);
 
-        Map<String, Object> postData = new HashMap<>();
+        Map<String, String> postData = new HashMap<>();
         postData.put("description", post.getDescription());
         postData.put("publishedTime", post.getDateOfCreation().toString());
         postData.put("username", userAccountService.getUsernameById(post.getUserId()));

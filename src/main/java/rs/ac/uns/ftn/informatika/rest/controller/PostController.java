@@ -142,7 +142,7 @@ public class PostController {
 
     }
 
-    @PostMapping("/{postId}/advertisable")
+    @PostMapping("/advertisable/{postId}")
     public ResponseEntity<Void> markPostAsAdvertisable(@PathVariable Long postId) {
 
         postService.markPostAsAdvertisable(postId);
