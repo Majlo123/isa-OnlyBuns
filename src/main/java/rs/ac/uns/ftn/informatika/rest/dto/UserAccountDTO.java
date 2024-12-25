@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import rs.ac.uns.ftn.informatika.rest.domain.Address;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class UserAccountDTO {
@@ -38,7 +39,7 @@ public class UserAccountDTO {
     @Min(value = 0)
     private int postCount;
 
-    private Date lastTimeUsed;
+    private LocalDateTime lastTimeUsed;
 
     public UserAccountDTO() {
     }
@@ -93,8 +94,8 @@ public class UserAccountDTO {
         this.postCount = postCount;
     }
 
-    public Date getLastTimeUsed() { return lastTimeUsed; }
+    public LocalDateTime getLastTimeUsed() { return lastTimeUsed; }
 
-    public void setLastTimeUsed(Date lastTimeUsed) { this.lastTimeUsed = lastTimeUsed; }
+    public void setLastTimeUsed(LocalDateTime lastTimeUsed) { this.lastTimeUsed = lastTimeUsed; }
 
 }

@@ -255,12 +255,13 @@ public class UserAccountServiceImpl implements UserAccountService {
 
         for (UserAccount userAccount : userAccounts) {
             if (ChronoUnit.DAYS.between(
-                    userAccount.getLastTimeUsed().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                    userAccount.getLastTimeUsed().atZone(ZoneId.systemDefault()).toLocalDate(),
                     LocalDate.now()) >= 7) {
                 sendInactivityEmail(userAccount);
             }
         }
     }
+
     @Override
     public UserAccount delete(Long id) {
         UserAccount deletedAcc = userAccountRepository.findById(id).orElse(null);
@@ -284,15 +285,16 @@ public class UserAccountServiceImpl implements UserAccountService {
                 .orElseThrow(() -> new Exception("UserAccount not found with id: " + id));
     }
 
-
     public List<UserAccount> searchByFirstName(String firstName) {
         return userAccountRepository.findByFirstNameContaining(firstName);
     }
+
     @Override
     public String getEmailById(long userId) {
        Optional<UserAccount> userAcc = userAccountRepository.findById(userId);
        return userAcc.map(UserAccount::getEmail).orElse(null);
     }
+
     @Override
     @Transactional(readOnly = false)
     public String verify(AuthRequest credentials) {
@@ -305,6 +307,8 @@ public class UserAccountServiceImpl implements UserAccountService {
             UserAccount user = userAccountRepository.findByEmail(credentials.getUsername());
 
             if (user != null && user.isEnabled()) {
+                user.setLastTimeUsed(LocalDateTime.now());
+                userAccountRepository.save(user);
                 return jwtService.generateToken(user.getEmail(), user.getId(), user.getRole());
             }
         }
