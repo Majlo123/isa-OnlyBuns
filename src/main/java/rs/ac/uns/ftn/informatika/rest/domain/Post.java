@@ -31,8 +31,8 @@ public class Post {
     @Column(name = "user_id", nullable = false)
     private Long userId;  // Novo polje za povezivanje sa korisnikom
 
-    private int longitude;
-    private int latitude;
+    private double longitude;
+    private double latitude;
     private LocalDateTime dateOfCreation;
 
     // Konstruktor, getteri i setteri
@@ -49,7 +49,7 @@ public class Post {
         this.deleted = false;
     }
 
-    public Post(String title, String description, String imageUrl, Long userId, int longitude, int latitude, LocalDateTime dateOfCreation) {
+    public Post(String title, String description, String imageUrl, Long userId, double longitude, double latitude, LocalDateTime dateOfCreation) {
         this.title = title;
         this.description = description;
         this.imageUrl = imageUrl;
@@ -125,19 +125,19 @@ public class Post {
         this.userId = userId;
     }
 
-    public int getLongitude() {
+    public double getLongitude() {
         return this.longitude;
     }
 
-    public void setLongitude(int longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
-    public int getLatitude() {
+    public double getLatitude() {
         return this.latitude;
     }
 
-    public void setLatitude(int latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
