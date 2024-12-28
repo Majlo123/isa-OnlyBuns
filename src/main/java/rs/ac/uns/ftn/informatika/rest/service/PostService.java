@@ -1,5 +1,9 @@
 package rs.ac.uns.ftn.informatika.rest.service;
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +37,8 @@ public class PostService {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    private final Logger LOG = LoggerFactory.getLogger(PostService.class);
+
     public List<Post> getAllPosts() {
         return postRepository.findAllPostsWithSortedComments();
     }
@@ -60,11 +66,13 @@ public class PostService {
         return postRepository.findAllByUserIdAndDeletedFalse(userId);
     }
 
+    @Cacheable("posts")
     public Post createPost(PostDTO postDTO) {
         Long userId = postDTO.getUserId();
         Post post = new Post(postDTO.getTitle(), postDTO.getDescription(), postDTO.getImageUrl(), userId, postDTO.getLongitude(), postDTO.getLatitude(), postDTO.getDateOfCreation());
-
-        return postRepository.save(post);
+        post = postRepository.save(post);
+        LOG.info("Post with id: " + post.getId() + " successfully cached!");
+        return post;
     }
 
     public void deletePost(Long postId) {
@@ -79,12 +87,13 @@ public class PostService {
         Post post = postRepository.findByIdWithLock(postId).orElseThrow(() -> new EntityNotFoundException("Post with id: " + postId + " not found!!!"));
 
         //For testing
+        /*
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-
+        */
         post.setLikes(post.getLikes() + 1);
 
         postRepository.save(post);

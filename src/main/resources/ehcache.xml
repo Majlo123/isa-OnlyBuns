@@ -2,10 +2,11 @@
         xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
         xmlns='http://www.ehcache.org/v3'
         xsi:schemaLocation="http://www.ehcache.org/v3
-            http://www.ehcache.org/schema/ehcache-core-3.7.xsd">
+        https://www.ehcache.org/schema/ehcache-core.xsd">
 
-    <!-- Persistent cache directory -->
-    <persistence directory="cache-example/cache" />
+
+<!-- Persistent cache directory -->
+    <persistence directory="cache" />
 
     <!-- Default cache template -->
     <cache-template name="default">
@@ -21,7 +22,7 @@
         - REMOVED - uklanjanje objekta iz keša -->
         <listeners>
             <listener>
-                <class>rs.ac.uns.ftn.informatika.cache.logger.CacheLogger</class>
+                <class>rs.ac.uns.ftn.informatika.rest.utils.CacheLogger</class>
                 <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
                 <event-ordering-mode>UNORDERED</event-ordering-mode>
                 <events-to-fire-on>CREATED</events-to-fire-on>
@@ -42,9 +43,9 @@
     </cache-template>
 
     <!-- Cache configurations -->
-    <cache alias="post" uses-template="default">
-        <key-type>java.lang.Long</key-type>
-        <value-type>rs.ac.uns.ftn.informatika.cache.domain.Product</value-type>
+    <cache alias="posts" uses-template="default">
+        <key-type>rs.ac.uns.ftn.informatika.rest.dto.PostDTO</key-type>
+        <value-type>rs.ac.uns.ftn.informatika.rest.domain.Post</value-type>
         <resources>
             <heap>2</heap>
         </resources>
