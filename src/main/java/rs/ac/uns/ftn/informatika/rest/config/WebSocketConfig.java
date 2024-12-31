@@ -1,4 +1,4 @@
-/*package rs.ac.uns.ftn.informatika.rest.config;
+package rs.ac.uns.ftn.informatika.rest.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -11,14 +11,16 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic"); // Destinacija za klijente
-        config.setApplicationDestinationPrefixes("/app"); // Prefiks za server-side endpointove
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.enableSimpleBroker("/topic", "/queue"); // Omogućava slanje poruka klijentu
+        registry.setApplicationDestinationPrefixes("/app"); // Endpoint za primanje poruka
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS(); // Endpoint za WebSocket konekcije
+        registry.addEndpoint("/ws") // URL za SockJS konekciju
+                .setAllowedOrigins("http://localhost:4200") // Dozvoli sve origin-e (samo za razvoj)
+                .withSockJS(); // Koristi SockJS kao fallback
     }
 }
- */
+

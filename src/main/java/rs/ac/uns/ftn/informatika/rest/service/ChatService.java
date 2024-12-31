@@ -63,8 +63,14 @@ public class ChatService {
         return messageRepository.save(message);
     }
     public List<Message> getLatestMessagesByChatId(Long chatId) {
-        List<Message> descMessages = messageRepository.findTop10ByChatIdOrderByTimestampDesc(chatId);
-        return descMessages;
+        return messageRepository.findByChatIdOrderByTimestampAsc(chatId); // Pronalazi poslednjih 10
     }
+
+
+    public Chat getChatById(Long id) {
+        return chatRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chat not found with id: " + id));
+    }
+
 }
 

@@ -117,8 +117,12 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
 
-	</dependencies>
+    </dependencies>
 	<repositories>
 		<repository>
 			<id>central</id>
