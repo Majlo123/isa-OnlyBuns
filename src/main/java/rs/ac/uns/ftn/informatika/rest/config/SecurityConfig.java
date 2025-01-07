@@ -64,6 +64,13 @@ public class SecurityConfig {
                         "/api/userAccount/*/unfollow/**",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
+                        "/api/chats/user/**",
+                        "/api/chats/{chatId}/messages/paged",
+                        "/api/chats/{chatId}/new-member",
+                        "/api/chats/{chatId}/addUser",
+                        "/api/chats/{chatId}/removeUser",
+                        "/api/messages/{chatId}/latest",
+                        "/api/messages/send",
                         "/api/userAccount/verify",
                         "/swagger-ui.html").permitAll().anyRequest().authenticated());
         http.httpBasic(Customizer.withDefaults());
