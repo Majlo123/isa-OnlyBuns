@@ -1,5 +1,8 @@
 package rs.ac.uns.ftn.informatika.rest.controller;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +15,7 @@ import rs.ac.uns.ftn.informatika.rest.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.rest.service.LikesService;
 import rs.ac.uns.ftn.informatika.rest.service.PostService;
 import rs.ac.uns.ftn.informatika.rest.service.UserAccountService;
+import rs.ac.uns.ftn.informatika.rest.utils.RateLimiter;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,6 +38,8 @@ public class PostController {
     @Autowired
     private UserAccountService userAccountService;
 
+    private final RateLimiter rateLimiter = new RateLimiter();
+
     @GetMapping
     public List<Post> getAllPosts() {
         return postService.getAllPosts();
@@ -50,7 +56,16 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody PostDTO postDTO) {
+    public ResponseEntity<String> createPost(@RequestBody PostDTO postDTO, HttpServletRequest request) {
+
+        String identifier = request.getSession().getAttribute("email") != null
+                ? (String) request.getSession().getAttribute("email")
+                : request.getRemoteAddr(); // Use IP if no email
+
+        if (!rateLimiter.isRequestAllowed(identifier)) {
+            return new ResponseEntity<>("Too many requests. Please try again later.", HttpStatus.TOO_MANY_REQUESTS);
+        }
+
         if (postDTO.getImageBase64() != null && !postDTO.getImageBase64().isEmpty()) {
             try {
                 // Decode Base64
@@ -75,7 +90,8 @@ public class PostController {
                 return ResponseEntity.status(500).build();
             }
         }
-        return ResponseEntity.ok(postService.createPost(postDTO));
+        postService.createPost(postDTO);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
@@ -102,10 +118,19 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
     @PostMapping("/{id}/comments")
-    public ResponseEntity<String> addComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
+    public ResponseEntity<String> addComment(@PathVariable Long id, @RequestBody CommentDTO commentDTO, HttpServletRequest request) {
         try {
             if(commentDTO.getUserId() != 0){
+                String identifier = request.getSession().getAttribute("email") != null
+                        ? (String) request.getSession().getAttribute("email")
+                        : request.getRemoteAddr(); // Use IP if no email
+
+                if (!rateLimiter.isRequestAllowed(identifier)) {
+                    return new ResponseEntity<>("Too many requests. Please try again later.", HttpStatus.TOO_MANY_REQUESTS);
+                }
                 postService.addComment(id, commentDTO);
+
+
                 return ResponseEntity.ok().build();
             }else{
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -115,5 +140,12 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
 
+    }
+
+    @PostMapping("/advertisable/{postId}")
+    public ResponseEntity<Void> markPostAsAdvertisable(@PathVariable Long postId) {
+
+        postService.markPostAsAdvertisable(postId);
+        return ResponseEntity.ok().build();
     }
 }

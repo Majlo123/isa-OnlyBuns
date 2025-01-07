@@ -1,6 +1,11 @@
 package rs.ac.uns.ftn.informatika.rest.service;
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,15 +13,14 @@ import rs.ac.uns.ftn.informatika.rest.domain.Post;
 import rs.ac.uns.ftn.informatika.rest.domain.Comment;
 import rs.ac.uns.ftn.informatika.rest.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.rest.dto.CommentDTO;
-import rs.ac.uns.ftn.informatika.rest.repository.CommentRepository;
 import rs.ac.uns.ftn.informatika.rest.repository.PostRepository;
-import rs.ac.uns.ftn.informatika.rest.repository.FollowRepository; // Dodato
+import rs.ac.uns.ftn.informatika.rest.repository.FollowRepository;
 import rs.ac.uns.ftn.informatika.rest.exception.ResourceNotFoundException;
-import org.springframework.transaction.annotation.Isolation;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PostService {
@@ -25,10 +29,15 @@ public class PostService {
     private PostRepository postRepository;
 
     @Autowired
-    private CommentRepository commentRepository;
+    private FollowRepository followRepository;
 
     @Autowired
-    private FollowRepository followRepository; // Dodato
+    private UserAccountService userAccountService;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    private final Logger LOG = LoggerFactory.getLogger(PostService.class);
 
     public List<Post> getAllPosts() {
         return postRepository.findAllPostsWithSortedComments();
@@ -57,11 +66,13 @@ public class PostService {
         return postRepository.findAllByUserIdAndDeletedFalse(userId);
     }
 
+    @Cacheable("posts")
     public Post createPost(PostDTO postDTO) {
         Long userId = postDTO.getUserId();
         Post post = new Post(postDTO.getTitle(), postDTO.getDescription(), postDTO.getImageUrl(), userId, postDTO.getLongitude(), postDTO.getLatitude(), postDTO.getDateOfCreation());
-
-        return postRepository.save(post);
+        post = postRepository.save(post);
+        LOG.info("Post with id: " + post.getId() + " successfully cached!");
+        return post;
     }
 
     public void deletePost(Long postId) {
@@ -76,12 +87,13 @@ public class PostService {
         Post post = postRepository.findByIdWithLock(postId).orElseThrow(() -> new EntityNotFoundException("Post with id: " + postId + " not found!!!"));
 
         //For testing
+        /*
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-
+        */
         post.setLikes(post.getLikes() + 1);
 
         postRepository.save(post);
@@ -100,5 +112,16 @@ public class PostService {
         post.getComments().add(comment);
         postRepository.save(post);
         return comment;
+    }
+
+    public void markPostAsAdvertisable(Long postId) {
+        Post post = getPostById(postId);
+
+        Map<String, String> postData = new HashMap<>();
+        postData.put("description", post.getDescription());
+        postData.put("publishedTime", post.getDateOfCreation().toString());
+        postData.put("username", userAccountService.getUsernameById(post.getUserId()));
+
+        rabbitTemplate.convertAndSend("advertisementFanout", "", postData);
     }
 }

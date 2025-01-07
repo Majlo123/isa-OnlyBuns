@@ -19,9 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.rest.config.Utility;
-import rs.ac.uns.ftn.informatika.rest.controller.UserAccountController;
 import rs.ac.uns.ftn.informatika.rest.domain.AuthRequest;
 import rs.ac.uns.ftn.informatika.rest.domain.Follow;
 import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
@@ -58,9 +56,6 @@ public class UserAccountServiceImpl implements UserAccountService {
     private EntityManager entityManager;
     @Autowired
     private JavaMailSender mailSender;
-    private UserAccountController userAccountController;
-    @Autowired
-    private FollowInfoService followInfoService;
 
     private static final int FOLLOW_LIMIT_PER_MINUTE = 50;
 
@@ -211,6 +206,8 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     }
 
+
+    //Test it
     private void sendInactivityEmail(UserAccount userAccount) throws MessagingException, UnsupportedEncodingException {
         String toAddress = userAccount.getEmail();
         String fromAddress = "onlybunsteam@gmail.com";
@@ -218,7 +215,19 @@ public class UserAccountServiceImpl implements UserAccountService {
         String senderName = "OnlyBuns Team";
         String content = "<p>Dear "+userAccount.getFirstName() + ",<p>";
         content += "<p>You have been inactive since " + userAccount.getLastTimeUsed() + "<p><br>";
-        content += "<p>In the last 7 days you received " + (long) followInfoService.getAllForSevenDaysForUser(userAccount.getId()).size() + " followers!<p>";
+
+        List<Follow> follows = followRepository.findFolloweeById(userAccount.getId());
+
+        int numberOfNewFollowers = 0;
+        for(Follow follow : follows){
+            if(follow.getFollowedAt().equals(userAccount.getId()) && ChronoUnit.DAYS.between(
+                    follow.getFollowedAt().atZone(ZoneId.systemDefault()).toLocalDate(),
+                    LocalDate.now()) <= 7 ){
+                numberOfNewFollowers++;
+            }
+        }
+
+        content += "<p>In the last 7 days you received " + numberOfNewFollowers + " followers!<p>";
         content += "<p>Also your posts have gotten " + 5 + " likes in the last 7 days!";
         content += "<p>Dive deep again in the world of bunnies: <a href= https://dailybunny.org/>BunnyWorld</a><p>";
         content += "<p>Congratulations!<p>";
@@ -242,12 +251,13 @@ public class UserAccountServiceImpl implements UserAccountService {
 
         for (UserAccount userAccount : userAccounts) {
             if (ChronoUnit.DAYS.between(
-                    userAccount.getLastTimeUsed().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                    userAccount.getLastTimeUsed().atZone(ZoneId.systemDefault()).toLocalDate(),
                     LocalDate.now()) >= 7) {
                 sendInactivityEmail(userAccount);
             }
         }
     }
+
     @Override
     public UserAccount delete(Long id) {
         UserAccount deletedAcc = userAccountRepository.findById(id).orElse(null);
@@ -271,15 +281,16 @@ public class UserAccountServiceImpl implements UserAccountService {
                 .orElseThrow(() -> new Exception("UserAccount not found with id: " + id));
     }
 
-
     public List<UserAccount> searchByFirstName(String firstName) {
         return userAccountRepository.findByFirstNameContaining(firstName);
     }
+
     @Override
     public String getEmailById(long userId) {
        Optional<UserAccount> userAcc = userAccountRepository.findById(userId);
        return userAcc.map(UserAccount::getEmail).orElse(null);
     }
+
     @Override
     @Transactional(readOnly = false)
     public String verify(AuthRequest credentials) {
@@ -292,6 +303,8 @@ public class UserAccountServiceImpl implements UserAccountService {
             UserAccount user = userAccountRepository.findByEmail(credentials.getUsername());
 
             if (user != null && user.isEnabled()) {
+                user.setLastTimeUsed(LocalDateTime.now());
+                userAccountRepository.save(user);
                 return jwtService.generateToken(user.getEmail(), user.getId(), user.getRole());
             }
         }

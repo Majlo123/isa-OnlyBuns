@@ -72,7 +72,9 @@ public class SecurityConfig {
                         "/api/messages/{chatId}/latest",
                         "/api/messages/send",
                         "/api/userAccount/verify",
-                        "/swagger-ui.html").permitAll().anyRequest().authenticated());
+                        "/swagger-ui.html",
+                        "/actuator/prometheus",
+                        "/metrics").permitAll().anyRequest().authenticated());
         http.httpBasic(Customizer.withDefaults());
         http.sessionManagement(sess -> sess
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

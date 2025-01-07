@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
 
+import java.time.LocalDateTime;
 import java.time.temporal.Temporal;
 import java.util.Date;
 
@@ -49,7 +50,7 @@ public class UserAccount {
     private boolean isEnabled;
 
     @Column(name = "last_time_used")
-    private Date lastTimeUsed;
+    private LocalDateTime lastTimeUsed;
 
     @Column(name = "is_deleted")
     private boolean isDeleted = false;
@@ -197,7 +198,7 @@ public class UserAccount {
         this.role = role;
     }
 
-    public Date getLastTimeUsed(){ return lastTimeUsed; }
+    public LocalDateTime getLastTimeUsed(){ return lastTimeUsed; }
 
-    public void setLastTimeUsed(Date lastTimeUsed) { this.lastTimeUsed = lastTimeUsed; }
+    public void setLastTimeUsed(LocalDateTime lastTimeUsed) { this.lastTimeUsed = lastTimeUsed; }
 }

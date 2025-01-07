@@ -11,8 +11,8 @@ public class PostDTO {
     private int likes;
     private List<CommentDTO> comments;
     private Long userId;  // Novo polje za ID korisnika koji je kreirao post
-    private int longitude;
-    private int latitude;
+    private double longitude;
+    private double latitude;
     private LocalDateTime dateOfCreation;
     private String imageBase64;
 
@@ -74,19 +74,19 @@ public class PostDTO {
         this.userId = userId;
     }
 
-    public int getLongitude() {
+    public double getLongitude() {
         return this.longitude;
     }
 
-    public void setLongitude(int longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
-    public int getLatitude() {
+    public double getLatitude() {
         return this.latitude;
     }
 
-    public void setLatitude(int latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 

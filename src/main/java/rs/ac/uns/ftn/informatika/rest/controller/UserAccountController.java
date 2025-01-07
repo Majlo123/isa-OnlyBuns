@@ -32,15 +32,20 @@ import rs.ac.uns.ftn.informatika.rest.domain.UserAccount;
 import rs.ac.uns.ftn.informatika.rest.domain.UserInfo;
 import rs.ac.uns.ftn.informatika.rest.dto.UserAccountDTO;
 import rs.ac.uns.ftn.informatika.rest.service.UserAccountService;
+import rs.ac.uns.ftn.informatika.rest.utils.RateLimiter;
 
 import java.util.Collection;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/userAccount") // Tačna ruta
+@RequestMapping("/api/userAccount")
 public class UserAccountController {
+
     @Autowired
     private UserAccountService userAccountService;
+
+    private final RateLimiter rateLimiter = new RateLimiter();
+
     @Operation(description = "Get all users with pagination", method = "GET")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<UserAccount>> getAllUsers(
@@ -49,6 +54,7 @@ public class UserAccountController {
         Page<UserAccount> userAccounts = userAccountService.findAll(PageRequest.of(page, size));
         return new ResponseEntity<>(userAccounts, HttpStatus.OK);
     }
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE,path = "/getAllUsers")
     public ResponseEntity<List<UserAccount>> getAllUsers(){
 
@@ -77,10 +83,8 @@ public class UserAccountController {
         }
     }
 
-
-
     @PostMapping(path = "/login")
-    public ResponseEntity<String> login(@RequestBody AuthRequest credentials) {
+    public ResponseEntity<String> login(@RequestBody AuthRequest credentials, HttpServletRequest request) {
         System.out.println(credentials);
 
         String token = userAccountService.verify(credentials);
@@ -89,6 +93,12 @@ public class UserAccountController {
         if(token.equals("Failure")){
             return new ResponseEntity<String>("Email not verified",HttpStatus.UNAUTHORIZED);
         }else{
+
+            request.getSession().setAttribute("email", credentials.getUsername());
+
+            if (!rateLimiter.isRequestAllowed(credentials.getUsername())) {
+                return new ResponseEntity<>("Too many requests. Please try again later.", HttpStatus.TOO_MANY_REQUESTS);
+            }
             return new ResponseEntity<String>(token, HttpStatus.OK);
         }
     }
@@ -111,8 +121,6 @@ public class UserAccountController {
         }
     }
 
-
-
     @Operation(description = "Delete user", method = "DELETE")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
@@ -126,6 +134,7 @@ public class UserAccountController {
         }
         return new ResponseEntity<UserAccount>(HttpStatus.NO_CONTENT);
     }
+
     @PutMapping("/{currentUserId}/follow/{userId}")
     public ResponseEntity<Void> followUser(@PathVariable("currentUserId") Long currentUserId,
                                            @PathVariable("userId") Long userId) {
@@ -142,6 +151,7 @@ public class UserAccountController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // Nešto nije u redu
         }
     }
+
     @GetMapping("/{currentUserId}/follows/{userId}")
     public ResponseEntity<Boolean> isFollowing(@PathVariable("currentUserId") Long currentUserId,
                                                @PathVariable("userId") Long userId) {
@@ -164,7 +174,6 @@ public class UserAccountController {
         }
     }
 
-
     @GetMapping("/verify")
     public String verifyUser(@Param("code") String code) {
         if (userAccountService.verifyVerificationCode(code)) {
@@ -173,6 +182,7 @@ public class UserAccountController {
             return "verify_fail";
         }
     }
+
     @GetMapping("/{userId}/email")
     public ResponseEntity<String> getEmailByUserId(@PathVariable("userId") Long userId) {
         String email = userAccountService.getEmailById(userId);
@@ -181,7 +191,6 @@ public class UserAccountController {
         }
         return new ResponseEntity<String>(email, HttpStatus.OK);
     }
-    // New search and sort endpoints
 
     @Operation(description = "Search users by first name", method = "GET")
     @GetMapping(value = "/search/firstName", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -232,6 +241,4 @@ public class UserAccountController {
         List<UserAccount> users = userAccountService.sortByEmail();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
-
-
 }

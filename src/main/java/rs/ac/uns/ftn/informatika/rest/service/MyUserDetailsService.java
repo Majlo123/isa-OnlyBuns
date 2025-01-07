@@ -18,7 +18,7 @@ public class MyUserDetailsService implements UserDetailsService {
     @Override
     @Transactional(readOnly = false)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        System.out.println("EMAILLLLL:"+email);
+        System.out.println("EMAIL: "+email);
         UserAccount user = repository.findByEmail(email);
         if(user == null) {
             throw new UsernameNotFoundException("User not found");
