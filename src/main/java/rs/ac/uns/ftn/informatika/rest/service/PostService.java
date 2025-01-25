@@ -17,10 +17,12 @@ import rs.ac.uns.ftn.informatika.rest.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.rest.repository.FollowRepository;
 import rs.ac.uns.ftn.informatika.rest.exception.ResourceNotFoundException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class PostService {
@@ -66,14 +68,54 @@ public class PostService {
         return postRepository.findAllByUserIdAndDeletedFalse(userId);
     }
 
-    @Cacheable("posts")
+    @Cacheable(value = "posts", key = "#postDTO.imageUrl", unless = "#result == null")
     public Post createPost(PostDTO postDTO) {
         Long userId = postDTO.getUserId();
         Post post = new Post(postDTO.getTitle(), postDTO.getDescription(), postDTO.getImageUrl(), userId, postDTO.getLongitude(), postDTO.getLatitude(), postDTO.getDateOfCreation());
+
+        if (postDTO.getImageBase64() != null && !postDTO.getImageBase64().isEmpty()) {
+            try {
+                // Decode Base64 image
+                byte[] imageData = Base64.getDecoder().decode(postDTO.getImageBase64().split(",")[1]);
+
+                // Generate unique file name
+                String fileName = UUID.randomUUID().toString() + ".jpg";
+                Path imagePath = Paths.get("src/main/resources/static/images/posts");
+
+                // Ensure directory exists
+                Files.createDirectories(imagePath);
+
+                // Save image to disk
+                Path filePath = imagePath.resolve(fileName);
+                Files.write(filePath, imageData);
+
+                // Set the image URL in the post entity
+                post.setImageUrl("images/posts/" + fileName);
+
+                // Cache the image
+                cachePostImage(post.getImageUrl());
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to save image.", e);
+            }
+        }
+
+        // Save post to database
         post = postRepository.save(post);
         LOG.info("Post with id: " + post.getId() + " successfully cached!");
         return post;
     }
+
+
+    @Cacheable(value = "postImages", key = "#imageUrl", unless = "#result == null")
+    public byte[] cachePostImage(String imageUrl) {
+        try {
+            Path imagePath = Paths.get("src/main/resources/static/" + imageUrl);
+            return Files.readAllBytes(imagePath);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load image for caching: " + imageUrl, e);
+        }
+    }
+
 
     public void deletePost(Long postId) {
         Post post = getPostById(postId);
