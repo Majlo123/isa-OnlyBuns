@@ -141,7 +141,17 @@ public class PostController {
         }
 
     }
-
+    @GetMapping("/image/{imageName}")
+    public ResponseEntity<byte[]> getImage(@PathVariable String imageName) {
+        try {
+            byte[] image = postService.cachePostImage("images/posts/" + imageName);
+            return ResponseEntity.ok()
+                    .header("Content-Type", "image/jpeg")
+                    .body(image);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
     @PostMapping("/advertisable/{postId}")
     public ResponseEntity<Void> markPostAsAdvertisable(@PathVariable Long postId) {
 
