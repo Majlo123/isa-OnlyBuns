@@ -61,7 +61,7 @@ public class SecurityConfig {
                         "/api/admin/analytics",
                         "/api/userAccount/*/follow/**",
                         "/api/userAccount/*/follows/**",
-                        "/api/userAccount/*/unfollow/**",
+                        "/api/userAccount/*/unfollow/**", "/api/healthCare",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
                         "/api/chats/user/**",
